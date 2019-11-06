@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 
 	"github.com/CrowderSoup/socialmast.xyz/models"
 )
@@ -22,29 +22,36 @@ func NewPostsController(db *gorm.DB) *PostsController {
 	}
 }
 
-// Get gets posts
-func (c *PostsController) Get(ctx *gin.Context) {
-	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
-	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
-	offset := 0
+// InitRoutes initialize routes for this controller
+func (c *PostsController) InitRoutes(g *echo.Group) {
+	g.GET("", c.get)
+	g.POST("", c.post)
+}
 
+func (c *PostsController) get(ctx echo.Context) error {
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+	if limit == 0 {
+		limit = 10
+	}
+
+	offset := 0
 	if page > 1 {
-		offset = page * limit
+		offset = (page - 1) * limit
 	}
 
 	var posts []models.Post
 	c.DB.Limit(limit).Offset(offset).Order("created_at desc").Find(&posts)
 
-	ctx.HTML(http.StatusOK, "index", gin.H{
+	return ctx.Render(http.StatusOK, "index", echo.Map{
 		"title": "SocialMast",
 		"posts": posts,
 	})
 }
 
-// Post save a post
-func (c *PostsController) Post(ctx *gin.Context) {
-	title := ctx.PostForm("title")
-	body := ctx.PostForm("body")
+func (c *PostsController) post(ctx echo.Context) error {
+	title := ctx.FormValue("title")
+	body := ctx.FormValue("body")
 
 	if body == "" {
 		panic("Body is required")
@@ -59,7 +66,7 @@ func (c *PostsController) Post(ctx *gin.Context) {
 	var posts []models.Post
 	c.DB.Limit(10).Offset(0).Order("created_at desc").Find(&posts)
 
-	ctx.HTML(http.StatusOK, "index", gin.H{
+	return ctx.Render(http.StatusOK, "index", echo.Map{
 		"title": "SocialMast",
 		"posts": posts,
 	})
