@@ -1,0 +1,21 @@
+{{define "content"}}
+<h1>SocialMast</h1>
+<hr/>
+<form method="POST" action="/">
+  <input type="text" id="title" name="title" />
+  <textarea id="body" name="body">
+  </textarea>
+  <input type="submit" value="Post!">
+</form>
+<hr/>
+
+{{range .posts}}
+<h3>{{ .Title }}</h3>
+<p>
+  {{ .Body }}
+</p>
+<i>Created At: {{ .CreatedAt }}</i>
+<hr/>
+{{end}}
+
+{{end}}
