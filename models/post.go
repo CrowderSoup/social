@@ -6,6 +6,6 @@ import "github.com/jinzhu/gorm"
 type Post struct {
 	gorm.Model
 
-	Title string
-	Body  string
+	Title string `json:"title"`
+	Body  string `json:"body"`
 }
