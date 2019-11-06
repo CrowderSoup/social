@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 
-	"github.com/CrowderSoup/socialmast.xyz/models"
+	"github.com/CrowderSoup/social/boat/models"
 )
 
 // PostsController controller for posts

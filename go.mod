@@ -1,4 +1,4 @@
-module github.com/CrowderSoup/socialmast.xyz
+module github.com/CrowderSoup/social
 
 go 1.13
 

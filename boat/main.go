@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/CrowderSoup/socialmast.xyz/controllers"
-	"github.com/CrowderSoup/socialmast.xyz/models"
+	"github.com/CrowderSoup/social/boat/controllers"
+	"github.com/CrowderSoup/social/boat/models"
 )
 
 func main() {
