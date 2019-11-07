@@ -16,6 +16,9 @@ func HTTPErrorHandler(err error, ctx echo.Context) {
 		message = fmt.Sprint(he.Message)
 	}
 
+	// Log the error
+	ctx.Logger().Error(err)
+
 	page := "5xx"
 	if code < http.StatusInternalServerError {
 		page = "4xx"
