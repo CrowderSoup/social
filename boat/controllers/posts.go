@@ -8,7 +8,6 @@ import (
 	echo "github.com/labstack/echo/v4"
 
 	"github.com/CrowderSoup/social/boat/models"
-	"github.com/CrowderSoup/social/boat/services"
 )
 
 // PostsController controller for posts
@@ -30,13 +29,10 @@ func (c *PostsController) InitRoutes(g *echo.Group) {
 }
 
 func (c *PostsController) get(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
-	if err != nil {
-		return err
-	}
+	bc := ctx.(*BoatContext)
 
-	page, _ := strconv.Atoi(ctx.QueryParam("page"))
-	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+	page, _ := strconv.Atoi(bc.QueryParam("page"))
+	limit, _ := strconv.Atoi(bc.QueryParam("limit"))
 	if limit == 0 {
 		limit = 10
 	}
@@ -49,21 +45,18 @@ func (c *PostsController) get(ctx echo.Context) error {
 	var posts []models.Post
 	c.DB.Limit(limit).Offset(offset).Order("created_at desc").Find(&posts)
 
-	return ctx.Render(http.StatusOK, "index", echo.Map{
+	return bc.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
-		"loggedIn": s.LoggedIn(),
+		"loggedIn": bc.LoggedIn(),
 		"posts":    posts,
 	})
 }
 
 func (c *PostsController) post(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
-	if err != nil {
-		return err
-	}
+	bc := ctx.(*BoatContext)
 
-	title := ctx.FormValue("title")
-	body := ctx.FormValue("body")
+	title := bc.FormValue("title")
+	body := bc.FormValue("body")
 
 	if body == "" {
 		panic("Body is required")
@@ -78,9 +71,9 @@ func (c *PostsController) post(ctx echo.Context) error {
 	var posts []models.Post
 	c.DB.Limit(10).Offset(0).Order("created_at desc").Find(&posts)
 
-	return ctx.Render(http.StatusOK, "index", echo.Map{
+	return bc.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
-		"loggedIn": s.LoggedIn(),
+		"loggedIn": bc.LoggedIn(),
 		"posts":    posts,
 	})
 }

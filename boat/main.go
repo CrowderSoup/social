@@ -28,12 +28,30 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
+
+	// Get our Session Store ready
 	store := services.InitSessionStore("secret", db, true)
+	e.Use(session.Middleware(store))
+
+	// Custom Context
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			s, err := services.GetSession("Boat", c)
+			if err != nil {
+				return err
+			}
+
+			cc := &controllers.BoatContext{
+				Context: c,
+				Session: s,
+			}
+			return next(cc)
+		}
+	})
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(session.Middleware(store))
 
 	//Set Renderer
 	e.Renderer = echoview.Default()

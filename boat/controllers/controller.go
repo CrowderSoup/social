@@ -1,30 +1,29 @@
 package controllers
 
 import (
-	session "github.com/ipfans/echo-session"
-	"github.com/labstack/echo"
+	"net/http"
+
+	"github.com/CrowderSoup/social/boat/services"
+	echo "github.com/labstack/echo/v4"
 )
 
-// Controller is an interface for controllers
-type Controller interface {
+// BoatContext custom echo Context for boat
+type BoatContext struct {
+	echo.Context
+
+	Session *services.Session
 }
 
-// GetSessionValue gets a session value
-func GetSessionValue(ctx echo.Context, key string) interface{} {
-	s := session.Default(ctx)
-	return s.Get(key)
+// LoggedIn checks if a contexts session is logged in
+func (bc *BoatContext) LoggedIn() bool {
+	return bc.Session.LoggedIn()
 }
 
-// SetSessionValue sets a session value
-func SetSessionValue(ctx echo.Context, key, value string) {
-	s := session.Default(ctx)
-	s.Set(key, value)
-	s.Save()
-}
+// RedirectIfLoggedIn redirects to given path if logged in
+func (bc *BoatContext) RedirectIfLoggedIn(path string) error {
+	if bc.LoggedIn() {
+		return bc.Redirect(http.StatusSeeOther, path)
+	}
 
-// ClearSessionValue clears the current session
-func ClearSessionValue(ctx echo.Context, key string) {
-	s := session.Default(ctx)
-	s.Delete(key)
-	s.Save()
+	return nil
 }
