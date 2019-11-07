@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
+	echo "github.com/labstack/echo/v4"
 
 	"github.com/CrowderSoup/social/boat/models"
 	"github.com/CrowderSoup/social/boat/services"
@@ -35,14 +35,13 @@ func (c *AuthController) InitRoutes(g *echo.Group) {
 }
 
 func (c *AuthController) get(ctx echo.Context) error {
-	v := GetSessionValue(ctx, "loggedIn")
-	loggedIn := false
-	if v != nil {
-		loggedIn = true
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
 	}
 
-	if loggedIn {
-		return ctx.Redirect(http.StatusMovedPermanently, "/")
+	if s.LoggedIn() {
+		return ctx.Redirect(http.StatusSeeOther, "/")
 	}
 
 	return ctx.Render(http.StatusOK, "auth", echo.Map{
@@ -51,14 +50,13 @@ func (c *AuthController) get(ctx echo.Context) error {
 }
 
 func (c *AuthController) login(ctx echo.Context) error {
-	v := GetSessionValue(ctx, "loggedIn")
-	loggedIn := false
-	if v != nil {
-		loggedIn = true
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
 	}
 
-	if loggedIn {
-		return ctx.Redirect(http.StatusMovedPermanently, "/")
+	if s.LoggedIn() {
+		return ctx.Redirect(http.StatusSeeOther, "/")
 	}
 
 	email := ctx.QueryParam("email")
@@ -88,20 +86,22 @@ func (c *AuthController) login(ctx echo.Context) error {
 		})
 	}
 
-	SetSessionValue(ctx, "loggedIn", "true")
+	err = s.SetValue("loggedIn", true, true)
+	if err != nil {
+		return err
+	}
 
-	return ctx.Redirect(http.StatusMovedPermanently, "/")
+	return ctx.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *AuthController) register(ctx echo.Context) error {
-	v := GetSessionValue(ctx, "loggedIn")
-	loggedIn := false
-	if v != nil {
-		loggedIn = true
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
 	}
 
-	if loggedIn {
-		return ctx.Redirect(http.StatusMovedPermanently, "/")
+	if s.LoggedIn() {
+		return ctx.Redirect(http.StatusSeeOther, "/")
 	}
 
 	email := ctx.QueryParam("email")
@@ -112,7 +112,7 @@ func (c *AuthController) register(ctx echo.Context) error {
 		Password: password,
 	}
 
-	err := c.UserService.Create(user)
+	err = c.UserService.Create(user)
 	if err != nil {
 		return ctx.Render(http.StatusInternalServerError, "5xx", echo.Map{
 			"title": "SocialMast - Opps!",
@@ -120,13 +120,24 @@ func (c *AuthController) register(ctx echo.Context) error {
 		})
 	}
 
-	SetSessionValue(ctx, "loggedIn", "true")
+	err = s.SetValue("loggedIn", true, true)
+	if err != nil {
+		return err
+	}
 
-	return ctx.Redirect(http.StatusMovedPermanently, "/")
+	return ctx.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *AuthController) logout(ctx echo.Context) error {
-	ClearSessionValue(ctx, "loggedIn")
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
+	}
 
-	return ctx.Redirect(http.StatusMovedPermanently, "/")
+	err = s.ClearValue("loggedIn")
+	if err != nil {
+		return err
+	}
+
+	return ctx.Redirect(http.StatusSeeOther, "/")
 }
