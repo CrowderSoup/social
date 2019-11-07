@@ -5,9 +5,10 @@ import (
 	"strconv"
 
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
+	echo "github.com/labstack/echo/v4"
 
 	"github.com/CrowderSoup/social/boat/models"
+	"github.com/CrowderSoup/social/boat/services"
 )
 
 // PostsController controller for posts
@@ -29,10 +30,9 @@ func (c *PostsController) InitRoutes(g *echo.Group) {
 }
 
 func (c *PostsController) get(ctx echo.Context) error {
-	v := GetSessionValue(ctx, "loggedIn")
-	loggedIn := false
-	if v != nil {
-		loggedIn = true
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
 	}
 
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
@@ -51,16 +51,15 @@ func (c *PostsController) get(ctx echo.Context) error {
 
 	return ctx.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
-		"loggedIn": loggedIn,
+		"loggedIn": s.LoggedIn(),
 		"posts":    posts,
 	})
 }
 
 func (c *PostsController) post(ctx echo.Context) error {
-	v := GetSessionValue(ctx, "loggedIn")
-	loggedIn := false
-	if v != nil {
-		loggedIn = true
+	s, err := services.GetSession("Boat", ctx)
+	if err != nil {
+		return err
 	}
 
 	title := ctx.FormValue("title")
@@ -81,7 +80,7 @@ func (c *PostsController) post(ctx echo.Context) error {
 
 	return ctx.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
-		"loggedIn": loggedIn,
+		"loggedIn": s.LoggedIn(),
 		"posts":    posts,
 	})
 }

@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/foolin/goview/supports/echoview"
-	session "github.com/ipfans/echo-session"
+	echoview "github.com/foolin/goview/supports/echoview-v4"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo-contrib/session"
+	echo "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/CrowderSoup/social/boat/controllers"
 	"github.com/CrowderSoup/social/boat/models"
+	"github.com/CrowderSoup/social/boat/services"
 )
 
 func main() {
@@ -27,12 +28,12 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
-	store := session.NewCookieStore([]byte("secret"))
+	store := services.InitSessionStore("secret", db, true)
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(session.Sessions("GSESSION", store))
+	e.Use(session.Middleware(store))
 
 	//Set Renderer
 	e.Renderer = echoview.Default()
