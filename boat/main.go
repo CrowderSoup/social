@@ -30,8 +30,12 @@ func main() {
 	//Set Renderer
 	e.Renderer = echoview.Default()
 
+	// Register Routes
 	postsController := controllers.NewPostsController(db)
 	postsController.InitRoutes(e.Group("/"))
+
+	authController := controllers.NewAuthController(db)
+	authController.InitRoutes(e.Group("/auth"))
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
