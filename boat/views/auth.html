@@ -1,6 +1,6 @@
 {{define "content"}}
 <h2>Login</h2>
-<form id="login" method="POST" action="/login">
+<form id="login" method="POST" action="/auth/login">
   <div>
     <label for="login_email">Email</label>
     <input type="text" id="login_email" name="email" />
@@ -17,11 +17,7 @@
   OR
 </div>
 <h2>Register</h2>
-<form id="register" method="POST" action="/register">
-  <div>
-    <label for="register_nickname">Nickname</label>
-    <input type="text" id="register_nickname" name="nickname" />
-  </div>
+<form id="register" method="POST" action="/auth/register">
   <div>
     <label for="register_email">Email</label>
     <input type="text" id="register_email" name="email" />

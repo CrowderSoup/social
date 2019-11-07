@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/foolin/goview/supports/echoview"
+	session "github.com/ipfans/echo-session"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
@@ -18,14 +19,20 @@ func main() {
 	}
 	defer db.Close()
 
-	db.AutoMigrate(&models.Post{})
+	db.AutoMigrate(
+		&models.Post{},
+		&models.User{},
+		&models.Profile{},
+	)
 
 	// Echo instance
 	e := echo.New()
+	store := session.NewCookieStore([]byte("secret"))
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(session.Sessions("GSESSION", store))
 
 	//Set Renderer
 	e.Renderer = echoview.Default()

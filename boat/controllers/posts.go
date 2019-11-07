@@ -29,6 +29,12 @@ func (c *PostsController) InitRoutes(g *echo.Group) {
 }
 
 func (c *PostsController) get(ctx echo.Context) error {
+	v := GetSessionValue(ctx, "loggedIn")
+	loggedIn := false
+	if v != nil {
+		loggedIn = true
+	}
+
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 	if limit == 0 {
@@ -44,12 +50,19 @@ func (c *PostsController) get(ctx echo.Context) error {
 	c.DB.Limit(limit).Offset(offset).Order("created_at desc").Find(&posts)
 
 	return ctx.Render(http.StatusOK, "index", echo.Map{
-		"title": "SocialMast",
-		"posts": posts,
+		"title":    "SocialMast",
+		"loggedIn": loggedIn,
+		"posts":    posts,
 	})
 }
 
 func (c *PostsController) post(ctx echo.Context) error {
+	v := GetSessionValue(ctx, "loggedIn")
+	loggedIn := false
+	if v != nil {
+		loggedIn = true
+	}
+
 	title := ctx.FormValue("title")
 	body := ctx.FormValue("body")
 
@@ -67,7 +80,8 @@ func (c *PostsController) post(ctx echo.Context) error {
 	c.DB.Limit(10).Offset(0).Order("created_at desc").Find(&posts)
 
 	return ctx.Render(http.StatusOK, "index", echo.Map{
-		"title": "SocialMast",
-		"posts": posts,
+		"title":    "SocialMast",
+		"loggedIn": loggedIn,
+		"posts":    posts,
 	})
 }

@@ -59,17 +59,6 @@ func (s *UserService) GetByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-// GetByNickname gets a user by nickname
-func (s *UserService) GetByNickname(nickname string) (*models.User, error) {
-	var user models.User
-	result := s.DB.Where("nickname = ?", nickname).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return &user, nil
-}
-
 func (s *UserService) hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err

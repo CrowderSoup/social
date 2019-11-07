@@ -1,4 +1,5 @@
 {{define "content"}}
+{{if .loggedIn}}
 <form method="POST" action="/">
   <div>
     <label for="title">Title</label>
@@ -11,6 +12,10 @@
   </div>
   <input type="submit" value="Post!">
 </form>
+<a href="/auth/logout">Logout</a>
+{{else}}
+<a href="/auth">Login or Register</a>
+{{end}}
 <hr/>
 
 {{range .posts}}
