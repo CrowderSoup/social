@@ -35,36 +35,24 @@ func (c *AuthController) InitRoutes(g *echo.Group) {
 }
 
 func (c *AuthController) get(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
-	if err != nil {
-		return err
-	}
+	bc := ctx.(*BoatContext)
+	bc.RedirectIfLoggedIn("/")
 
-	if s.LoggedIn() {
-		return ctx.Redirect(http.StatusSeeOther, "/")
-	}
-
-	return ctx.Render(http.StatusOK, "auth", echo.Map{
+	return bc.Render(http.StatusOK, "auth", echo.Map{
 		"title": "SocialMast - Auth",
 	})
 }
 
 func (c *AuthController) login(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
-	if err != nil {
-		return err
-	}
+	bc := ctx.(*BoatContext)
+	bc.RedirectIfLoggedIn("/")
 
-	if s.LoggedIn() {
-		return ctx.Redirect(http.StatusSeeOther, "/")
-	}
-
-	email := ctx.QueryParam("email")
-	password := ctx.QueryParam("password")
+	email := bc.QueryParam("email")
+	password := bc.QueryParam("password")
 
 	user, err := c.UserService.GetByEmail(email)
 	if err != nil {
-		return ctx.Render(http.StatusUnauthorized, "4xx", echo.Map{
+		return bc.Render(http.StatusUnauthorized, "4xx", echo.Map{
 			"title": "SocialMast - Uh Oh!",
 			"error": fmt.Sprint(err),
 		})
@@ -73,36 +61,30 @@ func (c *AuthController) login(ctx echo.Context) error {
 	validPassword, err := c.UserService.CheckPassword(password, user)
 
 	if err != nil {
-		return ctx.Render(http.StatusInternalServerError, "5xx", echo.Map{
+		return bc.Render(http.StatusInternalServerError, "5xx", echo.Map{
 			"title": "SocialMast - Oops!",
 			"error": fmt.Sprint(err),
 		})
 	}
 
 	if !validPassword {
-		return ctx.Render(http.StatusUnauthorized, "4xx", echo.Map{
+		return bc.Render(http.StatusUnauthorized, "4xx", echo.Map{
 			"title": "SocialMast - Uh Oh!",
 			"error": fmt.Sprint(err),
 		})
 	}
 
-	err = s.SetValue("loggedIn", true, true)
+	err = bc.Session.SetValue("loggedIn", true, true)
 	if err != nil {
 		return err
 	}
 
-	return ctx.Redirect(http.StatusSeeOther, "/")
+	return bc.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *AuthController) register(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
-	if err != nil {
-		return err
-	}
-
-	if s.LoggedIn() {
-		return ctx.Redirect(http.StatusSeeOther, "/")
-	}
+	bc := ctx.(*BoatContext)
+	bc.RedirectIfLoggedIn("/")
 
 	email := ctx.QueryParam("email")
 	password := ctx.QueryParam("password")
@@ -112,32 +94,29 @@ func (c *AuthController) register(ctx echo.Context) error {
 		Password: password,
 	}
 
-	err = c.UserService.Create(user)
+	err := c.UserService.Create(user)
 	if err != nil {
-		return ctx.Render(http.StatusInternalServerError, "5xx", echo.Map{
+		return bc.Render(http.StatusInternalServerError, "5xx", echo.Map{
 			"title": "SocialMast - Opps!",
 			"error": fmt.Sprint(err),
 		})
 	}
 
-	err = s.SetValue("loggedIn", true, true)
+	err = bc.Session.SetValue("loggedIn", true, true)
 	if err != nil {
 		return err
 	}
 
-	return ctx.Redirect(http.StatusSeeOther, "/")
+	return bc.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *AuthController) logout(ctx echo.Context) error {
-	s, err := services.GetSession("Boat", ctx)
+	bc := ctx.(*BoatContext)
+
+	err := bc.Session.ClearValue("loggedIn")
 	if err != nil {
 		return err
 	}
 
-	err = s.ClearValue("loggedIn")
-	if err != nil {
-		return err
-	}
-
-	return ctx.Redirect(http.StatusSeeOther, "/")
+	return bc.Redirect(http.StatusSeeOther, "/")
 }
