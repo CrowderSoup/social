@@ -56,6 +56,9 @@ func main() {
 	//Set Renderer
 	e.Renderer = echoview.Default()
 
+	// HTTPErrorHandler
+	e.HTTPErrorHandler = controllers.HTTPErrorHandler
+
 	// Register Routes
 	postsController := controllers.NewPostsController(db)
 	postsController.InitRoutes(e.Group("/"))
