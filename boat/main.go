@@ -28,6 +28,7 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
+	e.Static("/assets", "assets")
 
 	// Get our Session Store ready
 	store := services.InitSessionStore("secret", db, true)
