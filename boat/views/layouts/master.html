@@ -3,10 +3,40 @@
 <html>
   <head>
     <title>{{.title}}</title>
+
+    <!--Styles-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!--Fonts-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
   <body>
-    <h1>SocialMast</h1>
-    <hr/>
+    <nav>
+      <div class="nav-wrapper row">
+        <div class="col s12">
+          <a href="#" class="brand-logo">SocialMast</a>
+          <a href="#" data-target="side-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li>
+              {{if .loggedIn}}
+              <a href="/auth/logout">Logout</a>
+              {{else}}
+              <a href="/auth">Login or Register</a>
+              {{end}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <ul class="sidenav" id="side-menu">
+      <li>
+        {{if .loggedIn}}
+        <a href="/auth/logout">Logout</a>
+        {{else}}
+        <a href="/auth">Login or Register</a>
+        {{end}}
+      </li>
+    </ul>
     {{template "content" .}}
     {{include "layouts/footer"}}
   </body>
