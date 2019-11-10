@@ -1,7 +1,5 @@
 {{define "content"}}
 <div class="container">
-</div>
-<div class="container">
   <div class="row">
     <div class="col s12 m12 l3">
       <div class="card white">
@@ -44,7 +42,7 @@
         </div>
         <div class="card-action">
           By <a class="p-author h-card" href="#">CrowderSoup</a>
-          On <a class="u-url" href="#">
+          On <a class="u-url" href="/posts/{{ .Slug }}">
             <time class="dt-published" datetime="{{ .CreatedAt }}">{{ .CreatedAt }}</time>
           </a>
         </div>

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -52,31 +51,21 @@ func (c *AuthController) login(ctx echo.Context) error {
 
 	user, err := c.UserService.GetByEmail(email)
 	if err != nil {
-		return bc.Render(http.StatusUnauthorized, "4xx", echo.Map{
-			"title": "SocialMast - Uh Oh!",
-			"error": fmt.Sprint(err),
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 
 	validPassword, err := c.UserService.CheckPassword(password, user)
-
 	if err != nil {
-		return bc.Render(http.StatusInternalServerError, "5xx", echo.Map{
-			"title": "SocialMast - Oops!",
-			"error": fmt.Sprint(err),
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 
 	if !validPassword {
-		return bc.Render(http.StatusUnauthorized, "4xx", echo.Map{
-			"title": "SocialMast - Uh Oh!",
-			"error": fmt.Sprint(err),
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 
 	err = bc.Session.SetValue("loggedIn", true, true)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
 	}
 
 	return bc.Redirect(http.StatusSeeOther, "/")
@@ -96,15 +85,12 @@ func (c *AuthController) register(ctx echo.Context) error {
 
 	err := c.UserService.Create(user)
 	if err != nil {
-		return bc.Render(http.StatusInternalServerError, "5xx", echo.Map{
-			"title": "SocialMast - Opps!",
-			"error": fmt.Sprint(err),
-		})
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating user")
 	}
 
 	err = bc.Session.SetValue("loggedIn", true, true)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
 	}
 
 	return bc.Redirect(http.StatusSeeOther, "/")
@@ -115,7 +101,7 @@ func (c *AuthController) logout(ctx echo.Context) error {
 
 	err := bc.Session.ClearValue("loggedIn")
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, "Problem clearing session")
 	}
 
 	return bc.Redirect(http.StatusSeeOther, "/")
