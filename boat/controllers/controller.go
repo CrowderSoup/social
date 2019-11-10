@@ -1,11 +1,38 @@
 package controllers
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/CrowderSoup/social/boat/services"
 	echo "github.com/labstack/echo/v4"
 )
+
+// CustomContextHandler injects our custom context
+func CustomContextHandler(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		s, err := services.GetSession("Boat", c)
+		if err != nil {
+			return err
+		}
+
+		cc := &BoatContext{
+			Context: c,
+			Session: s,
+		}
+		return next(cc)
+	}
+}
+
+// ManifestHandler handles the manifest
+func ManifestHandler(ctx echo.Context) error {
+	manifest, err := ioutil.ReadFile("./manifest.webmanifest")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error reading manifest")
+	}
+
+	return ctx.Blob(http.StatusOK, "application/manifest+json", manifest)
+}
 
 // BoatContext custom echo Context for boat
 type BoatContext struct {

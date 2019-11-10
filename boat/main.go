@@ -35,20 +35,7 @@ func main() {
 	e.Use(session.Middleware(store))
 
 	// Custom Context
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			s, err := services.GetSession("Boat", c)
-			if err != nil {
-				return err
-			}
-
-			cc := &controllers.BoatContext{
-				Context: c,
-				Session: s,
-			}
-			return next(cc)
-		}
-	})
+	e.Use(controllers.CustomContextHandler)
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -61,6 +48,8 @@ func main() {
 	e.HTTPErrorHandler = controllers.HTTPErrorHandler
 
 	// Register Routes
+	e.GET("/manifest.webmanifest", controllers.ManifestHandler)
+
 	postsController := controllers.NewPostsController(db)
 	postsController.InitRoutes(e.Group("/"))
 

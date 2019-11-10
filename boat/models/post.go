@@ -6,8 +6,9 @@ import "github.com/jinzhu/gorm"
 type Post struct {
 	gorm.Model
 
-	Title string `json:"title"`
-	Body  string `json:"body"`
+	Title string
+	Body  string
+	Slug  string `gorm:"type:varchar(100);unique_index"`
 
 	UserID int
 	User   User

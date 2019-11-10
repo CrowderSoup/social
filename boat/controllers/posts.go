@@ -3,22 +3,25 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
+	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	echo "github.com/labstack/echo/v4"
 
 	"github.com/CrowderSoup/social/boat/models"
+	"github.com/CrowderSoup/social/boat/services"
 )
 
 // PostsController controller for posts
 type PostsController struct {
-	DB *gorm.DB
+	Service *services.PostService
 }
 
 // NewPostsController creates a new PostsController
 func NewPostsController(db *gorm.DB) *PostsController {
 	return &PostsController{
-		DB: db,
+		Service: services.NewPostService(db),
 	}
 }
 
@@ -33,17 +36,11 @@ func (c *PostsController) get(ctx echo.Context) error {
 
 	page, _ := strconv.Atoi(bc.QueryParam("page"))
 	limit, _ := strconv.Atoi(bc.QueryParam("limit"))
-	if limit == 0 {
-		limit = 10
-	}
 
-	offset := 0
-	if page > 1 {
-		offset = (page - 1) * limit
+	posts, err := c.Service.GetList(page, limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
 	}
-
-	var posts []models.Post
-	c.DB.Limit(limit).Offset(offset).Order("created_at desc").Find(&posts)
 
 	return bc.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
@@ -55,21 +52,35 @@ func (c *PostsController) get(ctx echo.Context) error {
 func (c *PostsController) post(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 
-	title := bc.FormValue("title")
-	body := bc.FormValue("body")
+	title := strings.TrimSpace(bc.FormValue("title"))
+	body := strings.TrimSpace(bc.FormValue("body"))
 
 	if body == "" {
-		panic("Body is required")
+		return echo.NewHTTPError(http.StatusBadRequest, "Body is required!")
+	}
+
+	var URLSlug string
+	if title != "" {
+		URLSlug = slug.Make(title)
+	} else {
+		URLSlug = slug.Make(body[:50])
 	}
 
 	post := &models.Post{
 		Title: title,
 		Body:  body,
+		Slug:  URLSlug,
 	}
-	c.DB.Create(post)
 
-	var posts []models.Post
-	c.DB.Limit(10).Offset(0).Order("created_at desc").Find(&posts)
+	err := c.Service.Create(post)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
+	}
+
+	posts, err := c.Service.GetList(1, 10)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
+	}
 
 	return bc.Render(http.StatusOK, "index", echo.Map{
 		"title":    "SocialMast",
