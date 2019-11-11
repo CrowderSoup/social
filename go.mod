@@ -3,6 +3,7 @@ module github.com/CrowderSoup/social
 go 1.13
 
 require (
+	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/antonlindstrom/pgstore v0.0.0-20170604072116-a407030ba6d0 // indirect
 	github.com/biezhi/gorm-paginator/pagination v0.0.0-20190124091837-7a5c8ed20334
 	github.com/foolin/goview v0.1.1-0.20190516023416-b3858f0a81b9
