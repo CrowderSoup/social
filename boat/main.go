@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/foolin/goview"
 	echoview "github.com/foolin/goview/supports/echoview-v4"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -42,7 +43,16 @@ func main() {
 	e.Use(middleware.Recover())
 
 	//Set Renderer
-	e.Renderer = echoview.Default()
+	e.Renderer = echoview.New(goview.Config{
+		Root:      "views",
+		Extension: ".html",
+		Master:    "layouts/master",
+		Partials: []string{
+			"partials/post",
+			"partials/h-card",
+		},
+		DisableCache: true,
+	})
 
 	// HTTPErrorHandler
 	e.HTTPErrorHandler = controllers.HTTPErrorHandler

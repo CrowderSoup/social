@@ -45,3 +45,14 @@ func (s *PostService) GetList(page, limit int) ([]models.Post, error) {
 
 	return posts, nil
 }
+
+// GetBySlug attempts to get a post by slug
+func (s *PostService) GetBySlug(slug string) (*models.Post, error) {
+	var post models.Post
+	result := s.DB.Where(&models.Post{Slug: slug}).First(&post)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &post, nil
+}

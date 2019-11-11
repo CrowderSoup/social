@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
@@ -27,11 +29,12 @@ func NewPostsController(db *gorm.DB) *PostsController {
 
 // InitRoutes initialize routes for this controller
 func (c *PostsController) InitRoutes(g *echo.Group) {
-	g.GET("", c.get)
-	g.POST("", c.post)
+	g.GET("", c.listAll)
+	g.GET("posts/:slug", c.singlePost)
+	g.POST("", c.create)
 }
 
-func (c *PostsController) get(ctx echo.Context) error {
+func (c *PostsController) listAll(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 
 	page, _ := strconv.Atoi(bc.QueryParam("page"))
@@ -49,7 +52,7 @@ func (c *PostsController) get(ctx echo.Context) error {
 	})
 }
 
-func (c *PostsController) post(ctx echo.Context) error {
+func (c *PostsController) create(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 
 	title := strings.TrimSpace(bc.FormValue("title"))
@@ -59,11 +62,25 @@ func (c *PostsController) post(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Body is required!")
 	}
 
-	var URLSlug string
+	var slugSource string
 	if title != "" {
-		URLSlug = slug.Make(title)
+		slugSource = title
 	} else {
-		URLSlug = slug.Make(body[:50])
+		slugSource = body
+	}
+
+	// Ensure slug is the right length
+	if len(slugSource) > 50 {
+		slugSource = slugSource[:50]
+	}
+
+	URLSlug := slug.Make(slugSource)
+
+	// We don't care about errors here probably
+	existingPost, _ := c.Service.GetBySlug(URLSlug)
+	if existingPost != nil {
+		timestamp := time.Now().Unix()
+		URLSlug = slug.Make(fmt.Sprintf("%s %d", URLSlug, timestamp))
 	}
 
 	post := &models.Post{
@@ -86,5 +103,25 @@ func (c *PostsController) post(ctx echo.Context) error {
 		"title":    "SocialMast",
 		"loggedIn": bc.LoggedIn(),
 		"posts":    posts,
+	})
+}
+
+func (c *PostsController) singlePost(ctx echo.Context) error {
+	bc := ctx.(*BoatContext)
+
+	slug := bc.Param("slug")
+	if slug == "" {
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
+	}
+
+	post, err := c.Service.GetBySlug(slug)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get post")
+	}
+
+	return bc.Render(http.StatusOK, "post", echo.Map{
+		"title":    "SocialMast - " + post.Title,
+		"loggedIn": bc.LoggedIn(),
+		"post":     post,
 	})
 }

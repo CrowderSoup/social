@@ -1,0 +1,16 @@
+{{define "post"}}
+<div class="card white h-entry">
+  <div class="card-content">
+    <span class="card-title p-name">{{ .Title }}</span>
+    <div class="e-content">
+      {{ .Body }}
+    </div>
+  </div>
+  <div class="card-action">
+    By <a class="p-author h-card" href="/">CrowderSoup</a>
+    On <a class="u-url" href="/posts/{{ .Slug }}">
+      <time class="dt-published" datetime="{{ .CreatedAt }}">{{ .FormattedDate }}</time>
+    </a>
+  </div>
+</div>
+{{end}}
