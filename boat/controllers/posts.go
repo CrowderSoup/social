@@ -31,6 +31,7 @@ func NewPostsController(db *gorm.DB) *PostsController {
 func (c *PostsController) InitRoutes(g *echo.Group) {
 	g.GET("", c.listAll)
 	g.GET("posts/:slug", c.singlePost)
+	g.GET("posts/:slug/*", c.singlePost)
 	g.POST("", c.create)
 }
 
