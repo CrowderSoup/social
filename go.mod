@@ -6,6 +6,8 @@ require (
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/antonlindstrom/pgstore v0.0.0-20170604072116-a407030ba6d0 // indirect
 	github.com/biezhi/gorm-paginator/pagination v0.0.0-20190124091837-7a5c8ed20334
+	github.com/fatih/camelcase v1.0.0 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/foolin/goview v0.1.1-0.20190516023416-b3858f0a81b9
 	github.com/gin-contrib/sessions v0.0.1
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -15,6 +17,7 @@ require (
 	github.com/ipfans/echo-session v3.2.0+incompatible
 	github.com/jinzhu/gorm v1.9.11
 	github.com/json-iterator/go v1.1.8 // indirect
+	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo-contrib v0.7.0
 	github.com/labstack/echo/v4 v4.1.11

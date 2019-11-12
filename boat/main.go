@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/foolin/goview"
 	echoview "github.com/foolin/goview/supports/echoview-v4"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/koding/multiconfig"
 	"github.com/labstack/echo-contrib/session"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -14,8 +17,37 @@ import (
 	"github.com/CrowderSoup/social/boat/services"
 )
 
+// Server our server
+type Server struct {
+	AssetsDir      string `default:"assets"`
+	DBConfig       DBConfig
+	Port           int `default:"8080"`
+	RendererConfig RendererConfig
+	SessionSecret  string `required:"true"`
+}
+
+// DBConfig Config for the database
+type DBConfig struct {
+	ConnectionString string `default:"boat.db"`
+	Dialect          string `default:"sqlite3"`
+}
+
+// RendererConfig configuration for our renderer
+type RendererConfig struct {
+	Root         string   `default:"views"`
+	Extension    string   `default:".html"`
+	Master       string   `default:"layouts/master"`
+	Partials     []string `required:"true"`
+	DisableCache bool     `default:"true"`
+}
+
 func main() {
-	db, err := gorm.Open("sqlite3", "test.db")
+	// Load the config (pulls from config.toml first, then env variables for overrides)
+	var s Server
+	m := multiconfig.NewWithPath("config.toml")
+	m.MustLoad(&s)
+
+	db, err := gorm.Open(s.DBConfig.Dialect, s.DBConfig.ConnectionString)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -29,10 +61,10 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
-	e.Static("/assets", "assets")
+	e.Static(fmt.Sprintf("/%s", s.AssetsDir), s.AssetsDir)
 
 	// Get our Session Store ready
-	store := services.InitSessionStore("secret", db, true)
+	store := services.InitSessionStore(s.SessionSecret, db, true)
 	e.Use(session.Middleware(store))
 
 	// Custom Context
@@ -44,14 +76,11 @@ func main() {
 
 	//Set Renderer
 	e.Renderer = echoview.New(goview.Config{
-		Root:      "views",
-		Extension: ".html",
-		Master:    "layouts/master",
-		Partials: []string{
-			"partials/post",
-			"partials/h-card",
-		},
-		DisableCache: true,
+		Root:         s.RendererConfig.Root,
+		Extension:    s.RendererConfig.Extension,
+		Master:       s.RendererConfig.Master,
+		Partials:     s.RendererConfig.Partials,
+		DisableCache: s.RendererConfig.DisableCache,
 	})
 
 	// HTTPErrorHandler
@@ -67,5 +96,5 @@ func main() {
 	authController.InitRoutes(e.Group("/auth"))
 
 	// Start server
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", s.Port)))
 }
