@@ -55,6 +55,12 @@ func (c *PostsController) listAll(ctx echo.Context) error {
 func (c *PostsController) create(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
+
 	title := strings.TrimSpace(bc.FormValue("title"))
 	body := strings.TrimSpace(bc.FormValue("body"))
 
@@ -84,14 +90,15 @@ func (c *PostsController) create(ctx echo.Context) error {
 	}
 
 	post := &models.Post{
-		Title: title,
-		Body:  body,
-		Slug:  URLSlug,
+		Title:  title,
+		Body:   body,
+		Slug:   URLSlug,
+		UserID: bc.Session.UserID(),
 	}
 
-	err := c.Service.Create(post)
+	err = c.Service.Create(post)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating post")
 	}
 
 	posts, err := c.Service.GetList(1, 10)

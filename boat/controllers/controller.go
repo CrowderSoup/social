@@ -46,6 +46,15 @@ func (bc *BoatContext) LoggedIn() bool {
 	return bc.Session.LoggedIn()
 }
 
+// EnsureLoggedIn ensures a user is logged in, throws error if not
+func (bc *BoatContext) EnsureLoggedIn() error {
+	if !bc.LoggedIn() {
+		return echo.NewHTTPError(http.StatusUnauthorized, "You must be logged in")
+	}
+
+	return nil
+}
+
 // RedirectIfLoggedIn redirects to given path if logged in
 func (bc *BoatContext) RedirectIfLoggedIn(path string) error {
 	if bc.LoggedIn() {

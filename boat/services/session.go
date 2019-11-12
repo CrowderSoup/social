@@ -98,3 +98,14 @@ func (s *Session) LoggedIn() bool {
 
 	return loggedIn
 }
+
+// UserID attempts to get the userID from session
+func (s *Session) UserID() int {
+	v := s.GetValue("userID")
+	userID := 0
+	if uid, ok := v.(uint); ok {
+		userID = int(uid)
+	}
+
+	return userID
+}

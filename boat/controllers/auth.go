@@ -46,8 +46,8 @@ func (c *AuthController) login(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 	bc.RedirectIfLoggedIn("/")
 
-	email := bc.QueryParam("email")
-	password := bc.QueryParam("password")
+	email := bc.FormValue("email")
+	password := bc.FormValue("password")
 
 	user, err := c.UserService.GetByEmail(email)
 	if err != nil {
@@ -68,6 +68,11 @@ func (c *AuthController) login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
 	}
 
+	err = bc.Session.SetValue("userID", user.ID, true)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
+	}
+
 	return bc.Redirect(http.StatusSeeOther, "/")
 }
 
@@ -75,8 +80,8 @@ func (c *AuthController) register(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 	bc.RedirectIfLoggedIn("/")
 
-	email := ctx.QueryParam("email")
-	password := ctx.QueryParam("password")
+	email := ctx.FormValue("email")
+	password := ctx.FormValue("password")
 
 	user := &models.User{
 		Email:    email,
@@ -89,6 +94,11 @@ func (c *AuthController) register(ctx echo.Context) error {
 	}
 
 	err = bc.Session.SetValue("loggedIn", true, true)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
+	}
+
+	err = bc.Session.SetValue("userID", user.ID, true)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Problem setting session")
 	}
