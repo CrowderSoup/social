@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/CrowderSoup/social/boat/models"
+	"github.com/CrowderSoup/socialboat/models"
 )
 
 // UserService a service to handle dealing with Users

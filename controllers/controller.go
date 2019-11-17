@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/CrowderSoup/social/boat/services"
+	"github.com/CrowderSoup/socialboat/services"
 	echo "github.com/labstack/echo/v4"
 )
 

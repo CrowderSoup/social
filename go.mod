@@ -1,4 +1,4 @@
-module github.com/CrowderSoup/social
+module github.com/CrowderSoup/socialboat
 
 go 1.13
 

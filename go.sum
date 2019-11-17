@@ -4,6 +4,7 @@ cloud.google.com/go v0.37.4 h1:glPeL3BQJsbF6aIIYfZizMwc5LTYz250bDMjttbBGAU=
 cloud.google.com/go v0.37.4/go.mod h1:NHPJ89PdicEuT9hdPXMROBD91xc5uRDxsMtSB16k7hw=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/CrowderSoup/social v0.0.0-20191106025929-68ca91ccb7fa h1:lo3+E0PbH7GKUmHLd3YvR7bqwgE17u9APyLFyuUhWdE=
 github.com/CrowderSoup/socialmast.xyz v0.0.0-20191106025929-68ca91ccb7fa h1:PxloCc0sAlP4k/6ojhJ9cHDOvsEKZIRXnrGQB3ToIaY=
 github.com/GeertJohan/go.incremental v1.0.0/go.mod h1:6fAjUhbVuX1KcMD3c8TEgVUqmo4seqhv0i0kdATSkM0=
 github.com/GeertJohan/go.rice v1.0.0/go.mod h1:eH6gbSOAUv07dQuZVnBmoDP8mgsM1rtixis4Tib9if0=

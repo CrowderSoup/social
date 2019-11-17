@@ -6,8 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 	echo "github.com/labstack/echo/v4"
 
-	"github.com/CrowderSoup/social/boat/models"
-	"github.com/CrowderSoup/social/boat/services"
+	"github.com/CrowderSoup/socialboat/models"
+	"github.com/CrowderSoup/socialboat/services"
 )
 
 // AuthController auth controller
