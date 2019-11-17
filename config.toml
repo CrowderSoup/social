@@ -1,6 +1,6 @@
-AssetsDir 					= "assets"
-Port 								= 8080
-SessionSecret 			= "secret" # Change this to something random/unique, the longer the better
+AssetsDir 		= "assets"
+Port 					= 8080
+SessionSecret = "secret" # Change this to something random/unique, the longer the better
 
 [DBConfig]
 ConnectionString 	= "boat.db"
@@ -10,7 +10,7 @@ Dialect 					= "sqlite3"
 DisableCache 	= true
 Extension 		= ".html"
 Master 				= "layouts/master"
-Root 					= "views"
+Root 					= "views/themes/material" # Change to whatever theme you want
 Partials 			= [
 	"partials/post",
 	"partials/h-card"
