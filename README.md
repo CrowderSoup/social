@@ -1,9 +1,7 @@
-# Social 
+# SocialBoat
 
-Social will consist of two parts, a link aggregator (Mast), and a CMS of sorts
-(Boat).
-
-## Boat 
+SocialBoat is an IndieWeb project, with the goal of making having your own
+website both easy and fun.
 
 ### TODO:
 
@@ -36,4 +34,3 @@ Social will consist of two parts, a link aggregator (Mast), and a CMS of sorts
     - Reblog/Repost/Reply
     - "Like" of a URL 
 
-## Mast
