@@ -12,9 +12,9 @@ import (
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/CrowderSoup/social/boat/controllers"
-	"github.com/CrowderSoup/social/boat/models"
-	"github.com/CrowderSoup/social/boat/services"
+	"github.com/CrowderSoup/socialboat/controllers"
+	"github.com/CrowderSoup/socialboat/models"
+	"github.com/CrowderSoup/socialboat/services"
 )
 
 // Server our server

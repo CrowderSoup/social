@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/CrowderSoup/social/boat/models"
+	"github.com/CrowderSoup/socialboat/models"
 	"github.com/jinzhu/gorm"
 )
 
