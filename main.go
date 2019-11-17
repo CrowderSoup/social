@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/foolin/goview"
-	echoview "github.com/foolin/goview/supports/echoview-v4"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/koding/multiconfig"
@@ -22,7 +20,7 @@ type Server struct {
 	AssetsDir      string `default:"assets"`
 	DBConfig       DBConfig
 	Port           int `default:"8080"`
-	RendererConfig RendererConfig
+	RendererConfig services.RendererConfig
 	SessionSecret  string `required:"true"`
 }
 
@@ -30,15 +28,6 @@ type Server struct {
 type DBConfig struct {
 	ConnectionString string `default:"boat.db"`
 	Dialect          string `default:"sqlite3"`
-}
-
-// RendererConfig configuration for our renderer
-type RendererConfig struct {
-	Root         string   `default:"views"`
-	Extension    string   `default:".html"`
-	Master       string   `default:"layouts/master"`
-	Partials     []string `required:"true"`
-	DisableCache bool     `default:"true"`
 }
 
 func main() {
@@ -75,13 +64,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	//Set Renderer
-	e.Renderer = echoview.New(goview.Config{
-		Root:         s.RendererConfig.Root,
-		Extension:    s.RendererConfig.Extension,
-		Master:       s.RendererConfig.Master,
-		Partials:     s.RendererConfig.Partials,
-		DisableCache: s.RendererConfig.DisableCache,
-	})
+	e.Renderer = services.NewRenderer(s.RendererConfig)
 
 	// HTTPErrorHandler
 	e.HTTPErrorHandler = controllers.HTTPErrorHandler
