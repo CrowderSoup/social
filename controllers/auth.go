@@ -12,16 +12,15 @@ import (
 
 // AuthController auth controller
 type AuthController struct {
-	DB          *gorm.DB
-	UserService *services.UserService
+	UserService    *services.UserService
+	ProfileService *services.ProfileService
 }
 
 // NewAuthController creates a new AuthController
 func NewAuthController(db *gorm.DB) *AuthController {
-	userService := services.NewUserService(db)
 	return &AuthController{
-		DB:          db,
-		UserService: userService,
+		UserService:    services.NewUserService(db),
+		ProfileService: services.NewProfileService(db),
 	}
 }
 
@@ -37,7 +36,7 @@ func (c *AuthController) get(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 	bc.RedirectIfLoggedIn("/")
 
-	return bc.Render(http.StatusOK, "auth", echo.Map{
+	return bc.ReturnView(http.StatusOK, "auth", echo.Map{
 		"title": "SocialMast - Auth",
 	})
 }
@@ -91,6 +90,16 @@ func (c *AuthController) register(ctx echo.Context) error {
 	err := c.UserService.Create(user)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating user")
+	}
+
+	// Create a Profile
+	profile := &models.Profile{
+		UserID: user.ID,
+	}
+
+	err = c.ProfileService.Create(profile)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating user profile")
 	}
 
 	err = bc.Session.SetValue("loggedIn", true, true)

@@ -17,13 +17,13 @@ import (
 
 // PostsController controller for posts
 type PostsController struct {
-	Service *services.PostService
+	PostService *services.PostService
 }
 
 // NewPostsController creates a new PostsController
 func NewPostsController(db *gorm.DB) *PostsController {
 	return &PostsController{
-		Service: services.NewPostService(db),
+		PostService: services.NewPostService(db),
 	}
 }
 
@@ -41,15 +41,13 @@ func (c *PostsController) listAll(ctx echo.Context) error {
 	page, _ := strconv.Atoi(bc.QueryParam("page"))
 	limit, _ := strconv.Atoi(bc.QueryParam("limit"))
 
-	posts, err := c.Service.GetList(page, limit)
+	posts, err := c.PostService.GetList(page, limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
 	}
 
-	return bc.Render(http.StatusOK, "index", echo.Map{
-		"title":    "SocialMast",
-		"loggedIn": bc.LoggedIn(),
-		"posts":    posts,
+	return bc.ReturnView(http.StatusOK, "index", echo.Map{
+		"posts": posts,
 	})
 }
 
@@ -84,7 +82,7 @@ func (c *PostsController) create(ctx echo.Context) error {
 	URLSlug := slug.Make(slugSource)
 
 	// We don't care about errors here probably
-	existingPost, _ := c.Service.GetBySlug(URLSlug)
+	existingPost, _ := c.PostService.GetBySlug(URLSlug)
 	if existingPost != nil {
 		timestamp := time.Now().Unix()
 		URLSlug = slug.Make(fmt.Sprintf("%s %d", URLSlug, timestamp))
@@ -97,20 +95,18 @@ func (c *PostsController) create(ctx echo.Context) error {
 		UserID: bc.Session.UserID(),
 	}
 
-	err = c.Service.Create(post)
+	err = c.PostService.Create(post)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating post")
 	}
 
-	posts, err := c.Service.GetList(1, 10)
+	posts, err := c.PostService.GetList(1, 10)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
 	}
 
-	return bc.Render(http.StatusOK, "index", echo.Map{
-		"title":    "SocialMast",
-		"loggedIn": bc.LoggedIn(),
-		"posts":    posts,
+	return bc.ReturnView(http.StatusOK, "index", echo.Map{
+		"posts": posts,
 	})
 }
 
@@ -122,14 +118,13 @@ func (c *PostsController) singlePost(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "not found")
 	}
 
-	post, err := c.Service.GetBySlug(slug)
+	post, err := c.PostService.GetBySlug(slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get post")
 	}
 
-	return bc.Render(http.StatusOK, "post", echo.Map{
-		"title":    "SocialMast - " + post.Title,
-		"loggedIn": bc.LoggedIn(),
-		"post":     post,
+	return bc.ReturnView(http.StatusOK, "post", echo.Map{
+		"title": "SocialMast - " + post.Title,
+		"post":  post,
 	})
 }
