@@ -1,0 +1,48 @@
+{{define "content"}}
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <h3>Profile</h3>
+      <form method="POST" action="/profile" class="row">
+        <div class="input-field col s12">
+          <input type="text" id="nickname" name="nickname" value="{{ .profile.NickName }}" />
+          <label for="nickname">Nickname</label>
+        </div>
+        <div class="input-field col s12 m6 l6">
+          <input type="text" id="first_name" name="first_name" value="{{ .profile.FirstName }}" />
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s12 m6 l6">
+          <input type="text" id="last_name" name="last_name" value="{{ .profile.LastName }}" />
+          <label for="last_name">Last Name</label>
+        </div>
+        <div class="input-field col s12">
+          <input type="text" id="public_email" name="public_email" value="{{ .profile.PublicEmail }}" />
+          <label for="public_email">Public Email</label>
+        </div>
+        <div class="input-field col s12">
+          <input type="text" id="twitter" name="twitter" value="{{ .profile.Twitter }}" />
+          <label for="twitter">Twitter Account</label>
+        </div>
+        <div class="input-field col s12">
+          <input type="text" id="github" name="github" value="{{ .profile.Github }}" />
+          <label for="github">GitHub Account</label>
+        </div>
+        <div class="input-field col s12">
+          <input type="text" id="phone" name="phone" value="{{ .profile.Phone }}" />
+          <label for="phone">Phone Number</label>
+        </div>
+        <div class="input-field col s12">
+          <textarea id="note" name="note" class="materialize-textarea">{{ .profile.Note }}</textarea>
+          <label for="note">Note</label>
+        </div>
+        <div class="col s12">
+          <button type="submit" class="btn waves-effect waves-light">
+            Save <i class="material-icons right">save</i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{end}}

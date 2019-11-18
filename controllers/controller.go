@@ -5,11 +5,24 @@ import (
 	"net/http"
 
 	"github.com/CrowderSoup/socialboat/services"
+	"github.com/jinzhu/gorm"
 	echo "github.com/labstack/echo/v4"
 )
 
-// CustomContextHandler injects our custom context
-func CustomContextHandler(next echo.HandlerFunc) echo.HandlerFunc {
+// CustomContextHandler struct with a func for handling the custom context intjection
+type CustomContextHandler struct {
+	ProfileService *services.ProfileService
+}
+
+// NewCustomContextHandler returns a new CustomContextHandler
+func NewCustomContextHandler(db *gorm.DB) *CustomContextHandler {
+	return &CustomContextHandler{
+		ProfileService: services.NewProfileService(db),
+	}
+}
+
+// Handler injects our custom context
+func (h *CustomContextHandler) Handler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		s, err := services.GetSession("Boat", c)
 		if err != nil {
@@ -17,8 +30,9 @@ func CustomContextHandler(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		cc := &BoatContext{
-			Context: c,
-			Session: s,
+			Context:        c,
+			Session:        s,
+			ProfileService: h.ProfileService,
 		}
 		return next(cc)
 	}
@@ -38,7 +52,8 @@ func ManifestHandler(ctx echo.Context) error {
 type BoatContext struct {
 	echo.Context
 
-	Session *services.Session
+	Session        *services.Session
+	ProfileService *services.ProfileService
 }
 
 // LoggedIn checks if a contexts session is logged in
@@ -62,4 +77,29 @@ func (bc *BoatContext) RedirectIfLoggedIn(path string) error {
 	}
 
 	return nil
+}
+
+// ReturnView renders a view, adding some data to the return
+func (bc *BoatContext) ReturnView(code int, view string, data echo.Map) error {
+	// Set "title" if not already set
+	if _, ok := data["title"]; !ok {
+		data["title"] = "SocialMast"
+	}
+
+	// Set "loggedIn" if not already set
+	if _, ok := data["loggedIn"]; !ok {
+		data["loggedIn"] = bc.LoggedIn()
+	}
+
+	// Set "profile" if not already set
+	if _, ok := data["profile"]; !ok {
+		profile, err := bc.ProfileService.GetFirst()
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "couldn't get profile")
+		}
+
+		data["profile"] = profile
+	}
+
+	return bc.Render(code, view, data)
 }

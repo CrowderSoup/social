@@ -48,6 +48,9 @@ func main() {
 		&models.Profile{},
 	)
 
+	// Autoload Relationships
+	db.Set("gorm:auto_preload", true)
+
 	// Echo instance
 	e := echo.New()
 	e.Static(fmt.Sprintf("/%s", s.AssetsDir), s.AssetsDir)
@@ -57,7 +60,8 @@ func main() {
 	e.Use(session.Middleware(store))
 
 	// Custom Context
-	e.Use(controllers.CustomContextHandler)
+	ccHandler := controllers.NewCustomContextHandler(db)
+	e.Use(ccHandler.Handler)
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -77,6 +81,9 @@ func main() {
 
 	authController := controllers.NewAuthController(db)
 	authController.InitRoutes(e.Group("/auth"))
+
+	profileController := controllers.NewProfileController(db)
+	profileController.InitRoutes(e.Group("/profile"))
 
 	// Start server
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", s.Port)))

@@ -8,6 +8,7 @@
 
     <!--Styles-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="/assets/css/all.min.css">
 
     <!--Fonts-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -21,7 +22,13 @@
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li>
               {{if .loggedIn}}
-              <a href="/auth/logout">Logout</a>
+              <a class="dropdown-trigger" href="#!" data-target="loggedIn-dropdown">
+                Settings<i class="material-icons right">arrow_drop_down</i>
+              </a>
+              <ul id="loggedIn-dropdown" class="dropdown-content">
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+              </ul>
               {{else}}
               <a href="/auth">Login or Register</a>
               {{end}}
@@ -33,7 +40,13 @@
     <ul class="sidenav" id="side-menu">
       <li>
         {{if .loggedIn}}
-        <a href="/auth/logout">Logout</a>
+        <a class="dropdown-trigger" href="#!" data-target="loggedIn-dropdown">
+          Settings<i class="material-icons right">arrow_drop_down</i>
+        </a>
+        <ul id="loggedIn-dropdown" class="dropdown-content">
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/auth/logout">Logout</a></li>
+        </ul>
         {{else}}
         <a href="/auth">Login or Register</a>
         {{end}}

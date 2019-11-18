@@ -1,12 +1,30 @@
 {{define "h-card"}}
 <div class="card white h-card">
   <div class="card-content">
-    <a class="card-title p-name u-url" href="/">Aaron Crowder</a>
+    {{if .profile.PhotoURL }}
+    <div class="card-image">
+      <img alt="{{ .profile.DisplayName }}" src="{{ .profile.PhotoURL }}" />
+      <a class="card-title p-name p-nickname u-url" href="/">{{ .profile.DisplayName }}</a>
+    </div>
+    {{ else }}
+    <a class="card-title p-name u-url" href="/">{{ .profile.DisplayName }}</a>
+    {{ end }}
     <div class="e-content">
       <p class="p-note">
-        Feminist AF. Husband of one. Father of two. Lover of the open web.
+        {{ .profile.Note | noescape}}
       </p>
     </div>
+  </div>
+  <div class="card-action">
+    {{if .profile.PublicEmail}}
+    <a href="mailto:{{ .profile.PublicEmail }}"><i class="fas fa-envelope"></i></a>
+    {{end}}
+    {{if .profile.Twitter}}
+    <a href="https://twitter.com/{{ .profile.Twitter }}" target="_blank" rel="me"><i class="fab fa-twitter"></i></a>
+    {{end}}
+    {{if .profile.Github}}
+    <a href="https://github.com/{{ .profile.Github }}" target="_blank" rel="me"><i class="fab fa-github"></i></a>
+    {{end}}
   </div>
 </div>
 {{end}}
