@@ -30,6 +30,12 @@ func (c *ProfileController) InitRoutes(g *echo.Group) {
 func (c *ProfileController) get(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
 
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
+
 	profile, err := c.Service.GetByUserID(bc.Session.UserID())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get profile")
@@ -42,6 +48,12 @@ func (c *ProfileController) get(ctx echo.Context) error {
 
 func (c *ProfileController) update(ctx echo.Context) error {
 	bc := ctx.(*BoatContext)
+
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
 
 	profile, err := c.Service.GetByUserID(bc.Session.UserID())
 	if err != nil {

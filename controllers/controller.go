@@ -4,20 +4,27 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/CrowderSoup/socialboat/services"
 	"github.com/jinzhu/gorm"
 	echo "github.com/labstack/echo/v4"
+
+	"github.com/CrowderSoup/socialboat/config"
+	"github.com/CrowderSoup/socialboat/models"
+	"github.com/CrowderSoup/socialboat/services"
 )
 
 // CustomContextHandler struct with a func for handling the custom context intjection
 type CustomContextHandler struct {
+	Server         *config.Server
 	ProfileService *services.ProfileService
+	MenuService    *services.MenuService
 }
 
 // NewCustomContextHandler returns a new CustomContextHandler
-func NewCustomContextHandler(db *gorm.DB) *CustomContextHandler {
+func NewCustomContextHandler(db *gorm.DB, s *config.Server) *CustomContextHandler {
 	return &CustomContextHandler{
+		Server:         s,
 		ProfileService: services.NewProfileService(db),
+		MenuService:    services.NewMenuService(db),
 	}
 }
 
@@ -31,8 +38,10 @@ func (h *CustomContextHandler) Handler(next echo.HandlerFunc) echo.HandlerFunc {
 
 		cc := &BoatContext{
 			Context:        c,
+			Server:         h.Server,
 			Session:        s,
 			ProfileService: h.ProfileService,
+			MenuService:    h.MenuService,
 		}
 		return next(cc)
 	}
@@ -52,8 +61,10 @@ func ManifestHandler(ctx echo.Context) error {
 type BoatContext struct {
 	echo.Context
 
+	Server         *config.Server
 	Session        *services.Session
 	ProfileService *services.ProfileService
+	MenuService    *services.MenuService
 }
 
 // LoggedIn checks if a contexts session is logged in
@@ -83,7 +94,17 @@ func (bc *BoatContext) RedirectIfLoggedIn(path string) error {
 func (bc *BoatContext) ReturnView(code int, view string, data echo.Map) error {
 	// Set "title" if not already set
 	if _, ok := data["title"]; !ok {
-		data["title"] = "SocialMast"
+		data["title"] = bc.Server.SiteName
+	}
+
+	// Set "siteName" if not already set
+	if _, ok := data["siteName"]; !ok {
+		data["siteName"] = bc.Server.SiteName
+	}
+
+	// Set "tagline" if not already set
+	if _, ok := data["tagline"]; !ok {
+		data["tagline"] = bc.Server.TagLine
 	}
 
 	// Set "loggedIn" if not already set
@@ -94,11 +115,30 @@ func (bc *BoatContext) ReturnView(code int, view string, data echo.Map) error {
 	// Set "profile" if not already set
 	if _, ok := data["profile"]; !ok {
 		profile, err := bc.ProfileService.GetFirst()
-		if err != nil {
+
+		// TODO: Clean up this hack, there has to be a better way...
+		if err != nil && err.Error() != "record not found" {
 			return echo.NewHTTPError(http.StatusInternalServerError, "couldn't get profile")
+		} else if err != nil && err.Error() == "record not found" && bc.Request().RequestURI != "/auth" {
+			return bc.Redirect(http.StatusSeeOther, "/auth")
+		}
+
+		if profile == nil {
+			profile = &models.Profile{
+				NickName: "SocialMast",
+			}
 		}
 
 		data["profile"] = profile
+	}
+
+	if _, ok := data["menus"]; !ok {
+		menus, err := bc.MenuService.GetAllForView()
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "couldn't load menus")
+		}
+
+		data["menus"] = menus
 	}
 
 	return bc.Render(code, view, data)

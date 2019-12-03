@@ -14,6 +14,7 @@ type User struct {
 	Email    string `gorm:"type:varchar(100);unique_index"`
 	Password string
 	Profile  Profile
+	Posts    []Post
 }
 
 // Profile the users profile

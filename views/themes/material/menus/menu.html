@@ -1,0 +1,104 @@
+{{define "content"}}
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <form class="row" action="/menus/{{ .menu.ID }}" method="POST">
+        <div class="input-field col s12 m9 l9">
+          <input type="text" id="menu_name" name="menu_name" value="{{ .menu.Name }}" />
+          <label for="menu_name">Menu Name</label>
+        </div>
+        <div class="input-field col s12 m3 l3">
+          <button type="submit" class="btn waves-effect waves-light">
+            Save <i class="far fa-save">&nbsp;</i>
+          </button>
+        </div>
+      </form>
+      <h5>Menu Items</h5>
+      <ul class="collapsible popout">
+        {{ range .menu.MenuItems }}
+        <li>
+          <div class="collapsible-header"><i class="fas fa-edit">&nbsp;</i>{{ .Name }}</div>
+          <div class="collapsible-body">
+            <form class="row" action="/menus/{{ .MenuID }}/item/update" method="POST">
+              <div class="input-field col s12 m6 l6">
+                <input type="text" id="item_name_{{.ID}}" name="item_name" value="{{ .Name }}" />
+                <label for="item_name_{{.ID}}">Name</label>
+              </div>
+              <div class="input-field col s12 m6 l6">
+                <input type="number" id="item_weight_{{.ID}}" name="item_weight" value="{{ .Weight }}" />
+                <label for="item_weight_{{.ID}}">Weight</label>
+              </div>
+              <div class="input-field col s12">
+                <input type="text" id="item_url_{{.ID}}" name="item_url" value="{{ .URL }}" />
+                <label for="item_url_{{.ID}}">URL</label>
+              </div>
+              <div class="col s12">
+                <input type="hidden" name="item_id" value="{{.ID}}" />
+                <button type="submit" class="btn waves-effect waves-light">
+                  Save <i class="far fa-save">&nbsp;</i>
+                </button>
+                <button class="delete-btn btn red lighten-1 waves-effect waves-light" data-id="{{.ID}}">
+                  Delete <i class="fas fa-trash">&nbsp;</i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </li>
+        {{end}}
+        <li>
+          <div class="collapsible-header"><i class="fas fa-plus">&nbsp;</i>Add Menu Item</div>
+          <div class="collapsible-body">
+            <form class="row" action="/menus/{{ .menu.ID }}/item/create" method="POST">
+              <div class="input-field col s12 m6 l6">
+                <input type="text" id="item_name" name="item_name" />
+                <label for="name">Name</label>
+              </div>
+              <div class="input-field col s12 m6 l6">
+                <input type="number" id="item_weight" name="item_weight" />
+                <label for="weight">Weight</label>
+              </div>
+              <div class="input-field col s12">
+                <input type="text" id="item_url" name="item_url" />
+                <label for="url">URL</label>
+              </div>
+              <div class="col s12">
+                <button type="submit" class="btn waves-effect waves-light">
+                  Save <i class="far fa-save">&nbsp;</i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  async function deleteMenuItem(id) {
+    let url = `/menus/{{ .menu.ID }}/item/${id}`;
+
+    let request = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    };
+
+    await fetch(url, request);
+  }
+
+  document.querySelectorAll('.delete-btn')
+    .forEach(btn => {
+      btn.addEventListener('click', async event => {
+        event.preventDefault();
+
+        await deleteMenuItem(event.toElement.dataset.id);
+
+        window.location.reload(true);
+      });
+    });
+</script>
+{{end}}
