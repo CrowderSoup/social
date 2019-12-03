@@ -5,15 +5,16 @@ website both easy and fun.
 
 ### TODO:
 
-- Allow editing of user profile, then pull this data from the db and use it for
-    h-cards and whatnot
-    - Add "About" and "extended" about to profile
 - Allow editing some things about the site, like site name 
     - Use site settings in site for title and navbar and whatnot
 - Add webmention endpoint, this will be the sole source of "comments" to start
 - Add file upload
-- Add Rich text editor
-    - Maybe use https://quilljs.com/ 
+- Add text editor
+    - Use EasyMDE (https://github.com/Ionaru/easy-markdown-editor)
+        - GoldMark (https://github.com/yuin/goldmark) to parse Markdown into HTML, but:
+            - Do I do it on save, or on render? If I do it on save then editing
+                will require I translate BACK to markdown... Probably best to
+                keep it markdown in the database
     - This is going to require that I rewrite:
         - Post create endpoint, don't render a page, just return the result as
             JSON
