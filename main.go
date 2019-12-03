@@ -2,43 +2,29 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/koding/multiconfig"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo-contrib/session"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"github.com/CrowderSoup/socialboat/config"
 	"github.com/CrowderSoup/socialboat/controllers"
+	"github.com/CrowderSoup/socialboat/migrations"
 	"github.com/CrowderSoup/socialboat/models"
 	"github.com/CrowderSoup/socialboat/services"
 )
 
-// Server our server
-type Server struct {
-	AssetsDir      string `default:"assets"`
-	DBConfig       DBConfig
-	Port           int `default:"8080"`
-	RendererConfig services.RendererConfig
-	SessionSecret  string `required:"true"`
-}
-
-// DBConfig Config for the database
-type DBConfig struct {
-	ConnectionString string `default:"boat.db"`
-	Dialect          string `default:"sqlite3"`
-}
-
 func main() {
 	// Load the config (pulls from config.toml first, then env variables for overrides)
-	var s Server
-	m := multiconfig.NewWithPath("config.toml")
-	m.MustLoad(&s)
+	var s config.Server
+	config.LoadConfig(&s, "config.toml")
 
 	db, err := gorm.Open(s.DBConfig.Dialect, s.DBConfig.ConnectionString)
 	if err != nil {
-		panic("failed to connect database")
+		log.Fatal(err)
 	}
 	defer db.Close()
 
@@ -46,7 +32,24 @@ func main() {
 		&models.Post{},
 		&models.User{},
 		&models.Profile{},
+		&migrations.Migration{},
+		&models.Menu{},
+		&models.MenuItem{},
 	)
+
+	if s.Migrate {
+		migrator, err := migrations.NewMigrator(db, s.MigrateUp)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = migrator.RunMigrations()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return
+	}
 
 	// Autoload Relationships
 	db.Set("gorm:auto_preload", true)
@@ -60,7 +63,7 @@ func main() {
 	e.Use(session.Middleware(store))
 
 	// Custom Context
-	ccHandler := controllers.NewCustomContextHandler(db)
+	ccHandler := controllers.NewCustomContextHandler(db, &s)
 	e.Use(ccHandler.Handler)
 
 	// Middleware
@@ -84,6 +87,9 @@ func main() {
 
 	profileController := controllers.NewProfileController(db)
 	profileController.InitRoutes(e.Group("/profile"))
+
+	menuController := controllers.NewMenuController(db)
+	menuController.InitRoutes(e.Group("/menus"))
 
 	// Start server
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", s.Port)))

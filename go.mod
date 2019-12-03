@@ -12,6 +12,7 @@ require (
 	github.com/gin-contrib/sessions v0.0.1
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.4.0
+	github.com/go-delve/delve v1.3.2
 	github.com/gorilla/sessions v1.2.0
 	github.com/gosimple/slug v1.9.0
 	github.com/ipfans/echo-session v3.2.0+incompatible

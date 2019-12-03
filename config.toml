@@ -1,10 +1,12 @@
+SiteName 			= "CrowderSoup"
+TagLine       = "It's late and I don't know what to put here"
 AssetsDir 		= "assets"
 Port 					= 8080
 SessionSecret = "secret" # Change this to something random/unique, the longer the better
 
 [DBConfig]
-ConnectionString 	= "boat.db"
-Dialect 					= "sqlite3"
+ConnectionString 	= "host=localhost port=5432 user=postgres dbname=socialboat password=password sslmode=disable"
+Dialect 					= "postgres"
 
 [RendererConfig]
 DisableCache 	= true
