@@ -3,22 +3,13 @@
 SocialBoat is an IndieWeb project, with the goal of making having your own
 website both easy and fun.
 
-### TODO:
-
-- Add file upload
-- Add text editor
-    - Use EasyMDE (https://github.com/Ionaru/easy-markdown-editor)
-        - GoldMark (https://github.com/yuin/goldmark) to parse Markdown into HTML, but:
-            - Do I do it on save, or on render? If I do it on save then editing
-                will require I translate BACK to markdown... Probably best to
-                keep it markdown in the database
-    - This is going to require that I rewrite:
-        - Post create endpoint, don't render a page, just return the result as
-            JSON
-        - Post Create Partial (new), will have all the CSS, HTML, and JS
-            required for the post creation, including making the request,
-            uploading files, and reloading the page after a post is created 
-            successfully 
+### Pre-Launch TODOs
+- Add post create partial
+- Allow post editing using the same create partial
+- Allow post deletion
+    - Form w/ delete button that POSTs to delete endpoint, which deletes and
+        redirects to index
+- Refactor Menu delete endpoints to match post delete endpoints
 - Implement CSRF, echo supports this via middleware. Required before going to
     prod.
 - Add post kinds and update posting / editing interface accordingly
@@ -32,3 +23,9 @@ website both easy and fun.
     - Reblog/Repost/Reply
     - "Like" of a URL 
 - Add webmention endpoint, this will be the sole source of "comments" to start
+- Allow sending of webmentions so I can interact with other on the IndieWeb
+
+### Future Roadmap
+- IndieAuth server
+- Micropub server
+- Microsub server (and reader interface)

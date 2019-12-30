@@ -3,7 +3,7 @@
   <div class="card-content">
     <span class="card-title p-name">{{ .Title }}</span>
     <div class="e-content">
-      {{ .Body | noescape }}
+      {{ .Body | markdown }}
     </div>
   </div>
   <div class="card-action">

@@ -1,6 +1,7 @@
 SiteName 			= "CrowderSoup"
 TagLine       = "It's late and I don't know what to put here"
 AssetsDir 		= "assets"
+RootURL				= "http://localhost:8080"
 Port 					= 8080
 SessionSecret = "secret" # Change this to something random/unique, the longer the better
 

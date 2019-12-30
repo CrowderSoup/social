@@ -11,7 +11,8 @@ type Server struct {
 	TagLine        string `default:""`
 	AssetsDir      string `default:"assets"`
 	DBConfig       DBConfig
-	Port           int `default:"8080"`
+	RootURL        string `default:"http://localhost:8080"` // With Protocol, include port if your reverse proxy has your site on a non-standard port (80/443)
+	Port           int    `default:"8080"`                  // Port the Go server will run on (enables you to run multiple instances on the same server)
 	RendererConfig services.RendererConfig
 	SessionSecret  string `required:"true"`
 	Migrate        bool   `default:"false"`

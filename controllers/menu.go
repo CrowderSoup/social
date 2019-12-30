@@ -104,14 +104,7 @@ func (c *MenuController) create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create menu")
 	}
 
-	menus, err := c.MenuService.GetAll()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "couldn't get menus")
-	}
-
-	return bc.ReturnView(http.StatusOK, "menus/index", echo.Map{
-		"menus": menus,
-	})
+	return bc.Redirect(http.StatusSeeOther, "/menus")
 }
 
 func (c *MenuController) createItem(ctx echo.Context) error {
@@ -184,14 +177,7 @@ func (c *MenuController) update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "couldn't update menu")
 	}
 
-	menus, err := c.MenuService.GetAll()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "couldn't get menus")
-	}
-
-	return bc.ReturnView(http.StatusOK, "menus/index", echo.Map{
-		"menus": menus,
-	})
+	return bc.Redirect(http.StatusSeeOther, "/menus")
 }
 
 func (c *MenuController) updateItem(ctx echo.Context) error {
