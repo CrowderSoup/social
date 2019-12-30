@@ -5,9 +5,6 @@ website both easy and fun.
 
 ### TODO:
 
-- Allow editing some things about the site, like site name 
-    - Use site settings in site for title and navbar and whatnot
-- Add webmention endpoint, this will be the sole source of "comments" to start
 - Add file upload
 - Add text editor
     - Use EasyMDE (https://github.com/Ionaru/easy-markdown-editor)
@@ -34,4 +31,4 @@ website both easy and fun.
     - Check-in (would require we get location from browser)
     - Reblog/Repost/Reply
     - "Like" of a URL 
-
+- Add webmention endpoint, this will be the sole source of "comments" to start
