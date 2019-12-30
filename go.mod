@@ -24,9 +24,11 @@ require (
 	github.com/labstack/echo/v4 v4.1.11
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
+	github.com/minio/minio-go/v6 v6.0.44 // indirect
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/wader/gormstore v0.0.0-20190904144442-d36772af4310
+	github.com/yuin/goldmark v1.1.19
 	golang.org/x/crypto v0.0.0-20191106202628-ed6320f186d4
 	golang.org/x/net v0.0.0-20191105084925-a882066a44e0 // indirect
 	golang.org/x/sys v0.0.0-20191105231009-c1f44814a5cd // indirect

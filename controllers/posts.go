@@ -100,14 +100,7 @@ func (c *PostsController) create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating post")
 	}
 
-	posts, err := c.PostService.GetList(1, 10)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Error getting posts")
-	}
-
-	return bc.ReturnView(http.StatusOK, "index", echo.Map{
-		"posts": posts,
-	})
+	return bc.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *PostsController) singlePost(ctx echo.Context) error {

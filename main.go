@@ -91,6 +91,9 @@ func main() {
 	menuController := controllers.NewMenuController(db)
 	menuController.InitRoutes(e.Group("/menus"))
 
+	filesController := controllers.NewFilesController(db)
+	filesController.InitRoutes(e.Group("/media"))
+
 	// Start server
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", s.Port)))
 }

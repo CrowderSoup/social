@@ -1,10 +1,12 @@
 package services
 
 import (
+	"bytes"
 	"html/template"
 
 	"github.com/foolin/goview"
 	echoview "github.com/foolin/goview/supports/echoview-v4"
+	"github.com/yuin/goldmark"
 )
 
 // RendererConfig configuration for our renderer
@@ -24,13 +26,18 @@ func NewRenderer(config RendererConfig) *echoview.ViewEngine {
 		Master:    config.Master,
 		Partials:  config.Partials,
 		Funcs: template.FuncMap{
-			"noescape": NoEscape,
+			"markdown": Markdown,
 		},
 		DisableCache: config.DisableCache,
 	})
 }
 
-// NoEscape returns an unescaped HTML string
-func NoEscape(s string) template.HTML {
-	return template.HTML(s)
+// Markdown returns rendered markdown
+func Markdown(s string) template.HTML {
+	var buf bytes.Buffer
+	if err := goldmark.Convert([]byte(s), &buf); err != nil {
+		panic(err)
+	}
+
+	return template.HTML(buf.String())
 }
