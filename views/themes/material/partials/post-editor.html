@@ -1,0 +1,85 @@
+{{define "post-editor"}}
+<div class="row">
+  <div class="col s12">
+    <h4>Add Post</h4>
+    <form method="POST" action="/" class="row">
+      <div class="input-field col s12">
+        <input type="text" id="title" name="title" />
+        <label for="title">Title</label>
+      </div>
+      <div class="input-field col s12">
+        <textarea id="body" name="body"></textarea>
+      </div>
+      <div class="col s12">
+        <button type="submit" class="btn waves-effect waves-light">
+          Submit <i class="material-icons right">send</i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+<script type="text/javascript">
+  let easyMDE = new EasyMDE({
+    element: document.getElementById('body'),
+    uploadImage: true,
+    imageUploadEndpoint: "/media/upload",
+    imageUploadFunction: (file, onSuccess, onError) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('/media/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => {
+          let location = '';
+
+          for (var pair of response.headers.entries()) {
+            if (pair[0] == 'location') {
+              location = pair[1];
+            }
+          }
+
+          if (location == '') {
+            throw "Location can't be empty"
+          }
+
+          return location
+        })
+        .then((location) => {
+          onSuccess(location);
+        })
+        .catch(error => {
+          onError(error);
+        })
+    },
+    toolbar: [
+      'bold',
+      'italic',
+      'heading',
+      '|',
+      'quote',
+      'unordered-list',
+      'ordered-list',
+      '|',
+      'link',
+      'image',
+      {
+        name: 'upload-image',
+        action: e => {
+          e.openBrowseFileWindow()
+        },
+        className: 'fas fa-upload',
+        title: 'Upload Image',
+      },
+      '|',
+      'preview',
+      'side-by-side',
+      'fullscreen',
+      '|',
+      'guide',
+    ]
+  });
+</script>
+{{end}}
