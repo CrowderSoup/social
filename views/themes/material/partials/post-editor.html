@@ -4,11 +4,11 @@
     <h4>Add Post</h4>
     <form method="POST" action="/" class="row">
       <div class="input-field col s12">
-        <input type="text" id="title" name="title" />
+        <input type="text" id="title" name="title" value="{{ .Title }}" />
         <label for="title">Title</label>
       </div>
       <div class="input-field col s12">
-        <textarea id="body" name="body"></textarea>
+        <textarea id="body" name="body" value="{{ .Body }}"></textarea>
       </div>
       <div class="col s12">
         <button type="submit" class="btn waves-effect waves-light">
@@ -22,6 +22,7 @@
 <script type="text/javascript">
   let easyMDE = new EasyMDE({
     element: document.getElementById('body'),
+    initialValue: '{{ .Body }}',
     uploadImage: true,
     imageUploadEndpoint: "/media/upload",
     imageUploadFunction: (file, onSuccess, onError) => {

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -95,6 +96,8 @@ func (bc *BoatContext) ReturnView(code int, view string, data echo.Map) error {
 	// Set "title" if not already set
 	if _, ok := data["title"]; !ok {
 		data["title"] = bc.Server.SiteName
+	} else {
+		data["title"] = fmt.Sprintf("%s: %s", bc.Server.SiteName, data["title"])
 	}
 
 	// Set "siteName" if not already set

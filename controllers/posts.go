@@ -32,6 +32,8 @@ func (c *PostsController) InitRoutes(g *echo.Group) {
 	g.GET("", c.listAll)
 	g.GET("posts/:slug", c.singlePost)
 	g.GET("posts/:slug/*", c.singlePost)
+	g.GET("posts/:slug/edit", c.edit)
+	g.POST("posts/:slug/update", c.update)
 	g.POST("", c.create)
 }
 
@@ -81,7 +83,7 @@ func (c *PostsController) create(ctx echo.Context) error {
 
 	URLSlug := slug.Make(slugSource)
 
-	// We don't care about errors here probably
+	// If there's a post with the same slug, add timestamp to this posts slug
 	existingPost, _ := c.PostService.GetBySlug(URLSlug)
 	if existingPost != nil {
 		timestamp := time.Now().Unix()
@@ -100,7 +102,70 @@ func (c *PostsController) create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error creating post")
 	}
 
-	return bc.Redirect(http.StatusSeeOther, "/")
+	return bc.Redirect(http.StatusSeeOther, fmt.Sprintf("/posts/%s", URLSlug))
+}
+
+func (c *PostsController) edit(ctx echo.Context) error {
+	bc := ctx.(*BoatContext)
+
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
+
+	// Get post and pass to view
+	slug := bc.Param("slug")
+
+	post, err := c.PostService.GetBySlug(slug)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "post not found")
+	}
+
+	return bc.ReturnView(http.StatusOK, "post-edit", echo.Map{
+		"title": fmt.Sprintf("Edit %s", post.Title),
+		"post":  post,
+	})
+}
+
+func (c *PostsController) update(ctx echo.Context) error {
+	bc := ctx.(*BoatContext)
+
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
+
+	title := strings.TrimSpace(bc.FormValue("title"))
+	body := strings.TrimSpace(bc.FormValue("body"))
+
+	if body == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Body is required!")
+	}
+
+	// Get the post
+	slug := bc.Param("slug")
+	if slug == "" {
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
+	}
+
+	post, err := c.PostService.GetBySlug(slug)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
+	}
+
+	// Update the post
+	post.Title = title
+	post.Body = body
+
+	// Save the post
+	err = c.PostService.Update(post)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update post")
+	}
+
+	return bc.Redirect(http.StatusSeeOther, fmt.Sprintf("/posts/%s", slug))
 }
 
 func (c *PostsController) singlePost(ctx echo.Context) error {
@@ -113,11 +178,11 @@ func (c *PostsController) singlePost(ctx echo.Context) error {
 
 	post, err := c.PostService.GetBySlug(slug)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get post")
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
 	}
 
 	return bc.ReturnView(http.StatusOK, "post", echo.Map{
-		"title": "SocialMast - " + post.Title,
+		"title": post.Title,
 		"post":  post,
 	})
 }

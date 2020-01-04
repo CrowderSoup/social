@@ -26,6 +26,15 @@ func (s *PostService) Create(post *models.Post) error {
 	return nil
 }
 
+// Update saves the post
+func (s *PostService) Update(post *models.Post) error {
+	if err := s.DB.Save(post).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetList gets a list of posts
 func (s *PostService) GetList(page, limit int) ([]models.Post, error) {
 	if limit == 0 {
