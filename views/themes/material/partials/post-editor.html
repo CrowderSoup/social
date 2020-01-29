@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col s12">
     <h4>Add Post</h4>
-    <form method="POST" action="/" class="row">
+    <form method="POST" action="/{{if .ID}}posts/{{ .Slug }}/update{{end}}" class="row">
       <div class="input-field col s12">
         <input type="text" id="title" name="title" value="{{ .Title }}" />
         <label for="title">Title</label>

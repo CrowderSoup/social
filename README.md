@@ -4,7 +4,6 @@ SocialBoat is an IndieWeb project, with the goal of making having your own
 website both easy and fun.
 
 ### Pre-Launch TODOs
-- Allow post editing using the same create partial
 - Allow post deletion
     - Form w/ delete button that POSTs to delete endpoint, which deletes and
         redirects to index

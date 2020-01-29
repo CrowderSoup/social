@@ -33,8 +33,8 @@ func (c *MenuController) InitRoutes(g *echo.Group) {
 	g.POST("/:menu_id/item/create", c.createItem)
 	g.POST("/:menu_id", c.update)
 	g.POST("/:menu_id/item/update", c.updateItem)
-	g.DELETE("/:menu_id/delete", c.delete)
-	g.DELETE("/:menu_id/item/:item_id", c.deleteItem)
+	g.POST("/:menu_id/delete", c.delete)
+	g.POST("/:menu_id/item/:item_id", c.deleteItem)
 }
 
 func (c *MenuController) list(ctx echo.Context) error {
@@ -52,7 +52,7 @@ func (c *MenuController) list(ctx echo.Context) error {
 	}
 
 	return bc.ReturnView(http.StatusOK, "menus/index", echo.Map{
-		"menus": menus,
+		"editMenus": menus,
 	})
 }
 
@@ -247,7 +247,7 @@ func (c *MenuController) delete(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "couldn't delete menu")
 	}
 
-	return nil
+	return bc.Redirect(http.StatusSeeOther, "/menus")
 }
 
 func (c *MenuController) deleteItem(ctx echo.Context) error {
@@ -269,5 +269,10 @@ func (c *MenuController) deleteItem(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "couldn't delete menu item")
 	}
 
-	return nil
+	menuID, err := strconv.ParseUint(bc.Param("menu_id"), 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "couldn't parse menu_id")
+	}
+
+	return bc.Redirect(http.StatusSeeOther, fmt.Sprintf("/menus/%d", menuID))
 }

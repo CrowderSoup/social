@@ -42,6 +42,10 @@
                 </button>
               </div>
             </form>
+            <form id="deleteItemForm-{{.ID}}" method="POST" action="/menus/{{ .MenuID }}/item/{{ .ID }}">
+              <input type="hidden" name="itemID" value="{{.ID}}" />
+              <input type="hidden" name="menuID" value="{{.MenuID}}" />
+            </form>
           </div>
         </li>
         {{end}}
@@ -74,30 +78,12 @@
   </div>
 </div>
 <script type="text/javascript">
-  async function deleteMenuItem(id) {
-    let url = `/menus/{{ .menu.ID }}/item/${id}`;
-
-    let request = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    };
-
-    await fetch(url, request);
-  }
-
   document.querySelectorAll('.delete-btn')
     .forEach(btn => {
       btn.addEventListener('click', async event => {
         event.preventDefault();
 
-        await deleteMenuItem(event.toElement.dataset.id);
-
-        window.location.reload(true);
+        document.getElementById(`deleteItemForm-${event.toElement.dataset.id}`).submit();
       });
     });
 </script>

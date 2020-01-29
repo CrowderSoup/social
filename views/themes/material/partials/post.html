@@ -12,6 +12,9 @@
       <time class="dt-published" datetime="{{ .CreatedAt }}">{{ .FormattedDate }}</time>
     </a>
     <a href="/posts/{{ .Slug }}/edit">Edit <i class="fas fa-edit"></i></a>
+    <form class="inline" method="POST" action="/posts/{{ .Slug }}/delete">
+      <button type="submit" class="btn-flat">Delete</button>
+    </form>
   </div>
 </div>
 {{end}}

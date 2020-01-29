@@ -4,12 +4,16 @@
     <div class="col s12">
       <ul class="collection with-header">
         <li class="collection-header"><h4>Menus</h4></li>
-        {{range .menus}}
+        {{range .editMenus}}
         <li class="collection-item">
           <div>
             {{ .Name }}
             <a href="/menus/{{ .ID }}" class="secondary-content"><i class="fas fa-edit"></i></a>
-            <a href="#" onclick="return deleteMenu({{.ID}})" class="secondary-content"><i class="fas fa-trash">&nbsp;</i></a>
+            <form class="inline" method="POST" action="/menus/{{.ID}}/delete" id="deleteMenuForm-{{.ID}}">
+              <a href="#" onclick="return deleteMenu({{.ID}})" class="secondary-content">
+                <i class="fas fa-trash">&nbsp;</i>
+              </a>
+            </form>
           </div>
         </li>
         {{end}}
@@ -31,21 +35,7 @@
 </div>
 <script type="text/javascript">
   async function deleteMenu(id) {
-    let url = `/menus/${id}/delete`;
-
-    let request = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    };
-    await fetch(url, request);
-
-    window.location.reload(true);
-
+    document.getElementById(`deleteMenuForm-${id}`).submit();
     return false;
   }
 </script>
