@@ -16,5 +16,6 @@ Master 				= "layouts/master"
 Root 					= "views/themes/material" # Change to whatever theme you want
 Partials 			= [
 	"partials/post",
-	"partials/h-card"
+	"partials/h-card",
+	"partials/post-editor"
 ]

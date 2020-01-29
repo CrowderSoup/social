@@ -34,6 +34,7 @@ func (c *PostsController) InitRoutes(g *echo.Group) {
 	g.GET("posts/:slug/*", c.singlePost)
 	g.GET("posts/:slug/edit", c.edit)
 	g.POST("posts/:slug/update", c.update)
+	g.POST("posts/:slug/delete", c.delete)
 	g.POST("", c.create)
 }
 
@@ -166,6 +167,34 @@ func (c *PostsController) update(ctx echo.Context) error {
 	}
 
 	return bc.Redirect(http.StatusSeeOther, fmt.Sprintf("/posts/%s", slug))
+}
+
+func (c *PostsController) delete(ctx echo.Context) error {
+	bc := ctx.(*BoatContext)
+
+	// Ensure the user is logged in
+	err := bc.EnsureLoggedIn()
+	if err != nil {
+		return err
+	}
+
+	// Get the post
+	slug := bc.Param("slug")
+	if slug == "" {
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
+	}
+
+	post, err := c.PostService.GetBySlug(slug)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "not found")
+	}
+
+	err = c.PostService.Delete(post)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "unable to delete")
+	}
+
+	return bc.Redirect(http.StatusSeeOther, "/")
 }
 
 func (c *PostsController) singlePost(ctx echo.Context) error {

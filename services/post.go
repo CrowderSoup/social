@@ -35,6 +35,15 @@ func (s *PostService) Update(post *models.Post) error {
 	return nil
 }
 
+// Delete delete's a post
+func (s *PostService) Delete(post *models.Post) error {
+	if err := s.DB.Delete(post).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetList gets a list of posts
 func (s *PostService) GetList(page, limit int) ([]models.Post, error) {
 	if limit == 0 {
