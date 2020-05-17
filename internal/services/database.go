@@ -4,9 +4,12 @@ import (
 	"context"
 
 	"github.com/CrowderSoup/socialboat/internal/config"
-	"go.uber.org/fx"
+	"github.com/CrowderSoup/socialboat/migrations"
+	"github.com/CrowderSoup/socialboat/models"
 
 	"github.com/jinzhu/gorm"
+	"go.uber.org/fx"
+
 	// Driver for gorm
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -19,8 +22,26 @@ type Database struct {
 
 // NewDatabase returns a Database
 func NewDatabase(c *config.Config) *Database {
+	db, err := gorm.Open(c.DBConfig.Dialect, c.DBConfig.ConnectionString)
+	if err != nil {
+		panic(err)
+	}
+
+	db.AutoMigrate(
+		&models.Post{},
+		&models.User{},
+		&models.Profile{},
+		&models.Menu{},
+		&models.MenuItem{},
+		&migrations.Migration{},
+	)
+
+	// Autoload Relationships
+	db.Set("gorm:auto_preload", true)
+
 	return &Database{
-		config: c.DBConfig,
+		config:     c.DBConfig,
+		connection: db,
 	}
 }
 
@@ -29,16 +50,10 @@ func InvokeDB(lc fx.Lifecycle, d *Database) {
 	lc.Append(
 		fx.Hook{
 			OnStart: func(context context.Context) error {
-				db, err := gorm.Open(d.config.Dialect, d.config.ConnectionString)
-				if err != nil {
-					return err
-				}
-
-				// Save our connection for later use
-				d.connection = db
 				return nil
 			},
 			OnStop: func(context context.Context) error {
+				// Ensure we close our connection on app shutdown
 				d.connection.Close()
 				return nil
 			},

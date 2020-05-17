@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/CrowderSoup/socialboat/internal/config"
+	"github.com/wader/gormstore"
 
+	"github.com/labstack/echo-contrib/session"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
@@ -17,7 +19,10 @@ type Server struct {
 }
 
 // NewWebServer returns a web server
-func NewWebServer(e *echo.Echo, c *config.Config) *Server {
+func NewWebServer(
+	e *echo.Echo,
+	c *config.Config,
+) *Server {
 	// Static dir
 	e.Static(fmt.Sprintf("/%s", c.AssetsDir), c.AssetsDir)
 
@@ -31,10 +36,18 @@ func NewWebServer(e *echo.Echo, c *config.Config) *Server {
 }
 
 // InvokeServer starts up our web server
-func InvokeServer(lc fx.Lifecycle, c *config.Config, server *Server) {
+func InvokeServer(
+	lc fx.Lifecycle,
+	c *config.Config,
+	server *Server,
+	sessionStore *gormstore.Store,
+) {
 	lc.Append(
 		fx.Hook{
 			OnStart: func(ctx context.Context) error {
+				// Server session store (wire up here because db is required)
+				server.echo.Use(session.Middleware(sessionStore))
+
 				go server.echo.Start(fmt.Sprintf(":%d", c.Port))
 				return nil
 			},
