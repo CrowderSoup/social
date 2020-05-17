@@ -29,6 +29,7 @@ require (
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/wader/gormstore v0.0.0-20190904144442-d36772af4310
 	github.com/yuin/goldmark v1.1.19
+	go.uber.org/fx v1.12.0
 	golang.org/x/crypto v0.0.0-20191106202628-ed6320f186d4
 	golang.org/x/net v0.0.0-20191105084925-a882066a44e0 // indirect
 	golang.org/x/sys v0.0.0-20191105231009-c1f44814a5cd // indirect
