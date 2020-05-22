@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/CrowderSoup/socialboat/internal/config"
+	"github.com/CrowderSoup/socialboat/internal/controllers"
 	"github.com/CrowderSoup/socialboat/internal/services"
 	"github.com/CrowderSoup/socialboat/internal/web"
 
@@ -13,6 +14,7 @@ func main() {
 		config.Module,
 		services.Module,
 		web.Module,
+		controllers.Module,
 	)
 	app := fx.New(
 		bundle,

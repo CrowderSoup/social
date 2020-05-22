@@ -19,24 +19,43 @@ type Server struct {
 	echo *echo.Echo
 }
 
+// Group a group of routes
+type Group interface {
+	InitControllers(*echo.Echo)
+}
+
+// Controller a controller composed of handlers
+type Controller interface {
+	InitRoutes(*echo.Group)
+}
+
+// NewServerParams params for new server
+type NewServerParams struct {
+	fx.In
+
+	Instance   *echo.Echo
+	Config     *config.Config
+	Renderer   *echoview.ViewEngine
+	AdminGroup Group `name:"AdminGroup"`
+}
+
 // NewWebServer returns a web server
-func NewWebServer(
-	e *echo.Echo,
-	c *config.Config,
-	r *echoview.ViewEngine,
-) *Server {
+func NewWebServer(p NewServerParams) *Server {
 	// Static dir
-	e.Static(fmt.Sprintf("/%s", c.AssetsDir), c.AssetsDir)
+	p.Instance.Static(fmt.Sprintf("/%s", p.Config.AssetsDir), p.Config.AssetsDir)
 
 	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	p.Instance.Use(middleware.Logger())
+	p.Instance.Use(middleware.Recover())
 
 	//Set Renderer
-	e.Renderer = r
+	p.Instance.Renderer = p.Renderer
+
+	// Init Routes
+	p.AdminGroup.InitControllers(p.Instance)
 
 	return &Server{
-		echo: e,
+		echo: p.Instance,
 	}
 }
 

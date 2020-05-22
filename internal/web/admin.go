@@ -5,21 +5,6 @@ import (
 	"go.uber.org/fx"
 )
 
-// AdminGroupParams params for ProvideAdminGroup
-type AdminGroupParams struct {
-	fx.In
-
-	Server     *Server
-	Middleware []echo.MiddlewareFunc `name:"AdminMiddleware"`
-}
-
-// AdminGroupResult fx result struct for ProvideAdminGroup
-type AdminGroupResult struct {
-	fx.Out
-
-	AdminGroup *echo.Group `name:"AdminGroup"`
-}
-
 // ProvideAdminMiddlewareParams fx params struct
 type ProvideAdminMiddlewareParams struct {
 	fx.In
@@ -43,16 +28,47 @@ func ProvideAdminMiddleware(p ProvideAdminMiddlewareParams) ProvideAdminMiddlewa
 	}
 }
 
+// AdminGroupParams params for ProvideAdminGroup
+type AdminGroupParams struct {
+	fx.In
+
+	Instance   *echo.Echo
+	Middleware []echo.MiddlewareFunc `name:"AdminMiddleware"`
+
+	// Controllers
+	IndexController Controller `name:"AdminIndexController"`
+}
+
+// AdminGroupResult fx result struct for ProvideAdminGroup
+type AdminGroupResult struct {
+	fx.Out
+
+	AdminGroup Group `name:"AdminGroup"`
+}
+
+// AdminGroup group for admin routes
+type AdminGroup struct {
+	middleware []echo.MiddlewareFunc
+
+	// Controllers
+	indexController Controller
+}
+
 // ProvideAdminGroup provides the admin group
 func ProvideAdminGroup(p AdminGroupParams) AdminGroupResult {
-	server := p.Server
-
-	// Create echo group
-	g := server.echo.Group("/admin", p.Middleware...)
-
-	// TODO: Wire up group routes
-
 	return AdminGroupResult{
-		AdminGroup: g,
+		AdminGroup: &AdminGroup{
+			middleware:      p.Middleware,
+			indexController: p.IndexController,
+		},
 	}
+}
+
+// InitControllers wire's up all our controllers
+func (g *AdminGroup) InitControllers(instance *echo.Echo) {
+	// Create echo group
+	group := instance.Group("/admin", g.middleware...)
+
+	// Wire up Controllers
+	g.indexController.InitRoutes(group)
 }
