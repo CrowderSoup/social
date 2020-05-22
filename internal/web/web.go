@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/CrowderSoup/socialboat/internal/config"
-	"github.com/wader/gormstore"
 
+	echoview "github.com/foolin/goview/supports/echoview-v4"
 	"github.com/labstack/echo-contrib/session"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/wader/gormstore"
 	"go.uber.org/fx"
 )
 
@@ -22,6 +23,7 @@ type Server struct {
 func NewWebServer(
 	e *echo.Echo,
 	c *config.Config,
+	r *echoview.ViewEngine,
 ) *Server {
 	// Static dir
 	e.Static(fmt.Sprintf("/%s", c.AssetsDir), c.AssetsDir)
@@ -29,6 +31,9 @@ func NewWebServer(
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	//Set Renderer
+	e.Renderer = r
 
 	return &Server{
 		echo: e,
@@ -62,6 +67,8 @@ func InvokeServer(
 var Module = fx.Options(
 	fx.Provide(
 		echo.New,
+		ProvideAdminMiddleware,
+		ProvideAdminGroup,
 		NewWebServer,
 	),
 )
