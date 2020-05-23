@@ -1,6 +1,8 @@
 package web
 
 import (
+	"github.com/CrowderSoup/socialboat/internal/controllers/admin"
+
 	echo "github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
@@ -36,7 +38,7 @@ type AdminGroupParams struct {
 	Middleware []echo.MiddlewareFunc `name:"AdminMiddleware"`
 
 	// Controllers
-	IndexController Controller `name:"AdminIndexController"`
+	IndexController *admin.IndexController `name:"AdminIndexController"`
 }
 
 // AdminGroupResult fx result struct for ProvideAdminGroup
@@ -51,7 +53,7 @@ type AdminGroup struct {
 	middleware []echo.MiddlewareFunc
 
 	// Controllers
-	indexController Controller
+	indexController *admin.IndexController
 }
 
 // ProvideAdminGroup provides the admin group

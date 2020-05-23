@@ -3,7 +3,6 @@ package admin
 import (
 	"net/http"
 
-	"github.com/CrowderSoup/socialboat/internal/web"
 	echoview "github.com/foolin/goview/supports/echoview-v4"
 	echo "github.com/labstack/echo/v4"
 	"go.uber.org/fx"
@@ -21,7 +20,7 @@ type IndexControllerParams struct {
 type IndexControllerResult struct {
 	fx.Out
 
-	IndexController web.Controller `name:"AdminIndexController"`
+	IndexController *IndexController `name:"AdminIndexController"`
 }
 
 // ProvideIndexController to fx
