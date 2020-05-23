@@ -43,7 +43,7 @@ type AdminGroupParams struct {
 type AdminGroupResult struct {
 	fx.Out
 
-	AdminGroup Group `name:"AdminGroup"`
+	AdminGroup *AdminGroup `name:"AdminGroup"`
 }
 
 // AdminGroup group for admin routes

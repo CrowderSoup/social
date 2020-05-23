@@ -36,7 +36,7 @@ type NewServerParams struct {
 	Instance   *echo.Echo
 	Config     *config.Config
 	Renderer   *echoview.ViewEngine
-	AdminGroup Group `name:"AdminGroup"`
+	AdminGroup *AdminGroup `name:"AdminGroup"`
 }
 
 // NewWebServer returns a web server
