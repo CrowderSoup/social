@@ -32,6 +32,9 @@ type NewServerParams struct {
 
 // NewWebServer returns a web server
 func NewWebServer(p NewServerParams) *Server {
+	// Remove Trailing Slashes from requests
+	p.Instance.Pre(middleware.RemoveTrailingSlash())
+
 	// Static dir
 	p.Instance.Static(fmt.Sprintf("/%s", p.Config.AssetsDir), p.Config.AssetsDir)
 

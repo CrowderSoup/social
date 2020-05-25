@@ -38,7 +38,8 @@ type AdminGroupParams struct {
 	Middleware []echo.MiddlewareFunc `name:"AdminMiddleware"`
 
 	// Controllers
-	IndexController *admin.IndexController `name:"AdminIndexController"`
+	IndexController *admin.IndexController
+	PostsController *admin.PostsController
 }
 
 // AdminGroupResult fx result struct for ProvideAdminGroup
@@ -54,6 +55,7 @@ type AdminGroup struct {
 
 	// Controllers
 	indexController *admin.IndexController
+	postsController *admin.PostsController
 }
 
 // ProvideAdminGroup provides the admin group
@@ -62,6 +64,7 @@ func ProvideAdminGroup(p AdminGroupParams) AdminGroupResult {
 		AdminGroup: &AdminGroup{
 			middleware:      p.Middleware,
 			indexController: p.IndexController,
+			postsController: p.PostsController,
 		},
 	}
 }
@@ -73,4 +76,5 @@ func (g *AdminGroup) InitControllers(instance *echo.Echo) {
 
 	// Wire up Controllers
 	g.indexController.InitRoutes(group)
+	g.postsController.InitRoutes(group)
 }

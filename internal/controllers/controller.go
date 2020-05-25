@@ -45,5 +45,6 @@ var Module = fx.Options(
 	fx.Provide(
 		ProvideCustomContextMiddleware,
 		admin.ProvideIndexController,
+		admin.ProvidePostsController,
 	),
 )

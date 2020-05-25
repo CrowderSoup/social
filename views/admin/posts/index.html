@@ -1,0 +1,43 @@
+{{define "content-header"}}Posts{{end}}
+
+{{define "content"}}
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Title</th>
+              <th scope="col">Slug</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .posts}}
+            <tr>
+              <th scope="row">{{ .ID }}</th>
+              <td>{{ .Title }}</td>
+              <td>{{ .Slug }}</td>
+              <td>
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Actions
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">View</a>
+                    <a class="dropdown-item" href="#">Edit</a>
+                    <a class="dropdown-item" href="#">Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

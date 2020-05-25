@@ -8,6 +8,7 @@ var Module = fx.Options(
 		NewDatabase,
 		NewRenderer,
 		NewBackendRenderer,
+		NewPostService,
 		NewSessionStore,
 	),
 )
