@@ -19,24 +19,15 @@ type Server struct {
 	echo *echo.Echo
 }
 
-// Group a group of routes
-type Group interface {
-	InitControllers(*echo.Echo)
-}
-
-// Controller a controller composed of handlers
-type Controller interface {
-	InitRoutes(*echo.Group)
-}
-
 // NewServerParams params for new server
 type NewServerParams struct {
 	fx.In
 
-	Instance   *echo.Echo
-	Config     *config.Config
-	Renderer   *echoview.ViewEngine
-	AdminGroup *AdminGroup `name:"AdminGroup"`
+	Instance                *echo.Echo
+	Config                  *config.Config
+	Renderer                *echoview.ViewEngine
+	AdminGroup              *AdminGroup         `name:"AdminGroup"`
+	CustomContextMiddleware echo.MiddlewareFunc `name:"CustomContextMiddleware"`
 }
 
 // NewWebServer returns a web server
@@ -50,6 +41,9 @@ func NewWebServer(p NewServerParams) *Server {
 
 	//Set Renderer
 	p.Instance.Renderer = p.Renderer
+
+	// Custom Context
+	p.Instance.Use(p.CustomContextMiddleware)
 
 	// Init Routes
 	p.AdminGroup.InitControllers(p.Instance)
