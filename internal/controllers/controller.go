@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/CrowderSoup/socialboat/internal/controllers/admin"
 
+	echoview "github.com/foolin/goview/supports/echoview-v4"
 	echo "github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
@@ -33,9 +34,10 @@ type BoatContext struct {
 	echo.Context
 }
 
-// ReturnView renders our view using the correct renderer
-func (bc *BoatContext) ReturnView() error {
-	panic("not implemnted")
+// Render overrides echo's Render method and uses echoview.Render instead
+// This ensures that the front and back end's get the renderer they need
+func (bc *BoatContext) Render(status int, view string, data interface{}) error {
+	return echoview.Render(bc.Context, status, view, data)
 }
 
 // Module provided to fx

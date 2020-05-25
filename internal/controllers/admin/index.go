@@ -3,7 +3,6 @@ package admin
 import (
 	"net/http"
 
-	echoview "github.com/foolin/goview/supports/echoview-v4"
 	echo "github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
@@ -36,5 +35,5 @@ func (c *IndexController) InitRoutes(g *echo.Group) {
 }
 
 func get(ctx echo.Context) error {
-	return echoview.Render(ctx, http.StatusOK, "index", echo.Map{})
+	return ctx.Render(http.StatusOK, "index", echo.Map{})
 }
