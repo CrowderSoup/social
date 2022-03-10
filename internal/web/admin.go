@@ -72,7 +72,7 @@ func ProvideAdminGroup(p AdminGroupParams) AdminGroupResult {
 // InitControllers wire's up all our controllers
 func (g *AdminGroup) InitControllers(instance *echo.Echo) {
 	// Create echo group
-	group := instance.Group("/admin", g.middleware...)
+	group := instance.Group("admin", g.middleware...)
 
 	// Wire up Controllers
 	g.indexController.InitRoutes(group)

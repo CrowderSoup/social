@@ -2,7 +2,9 @@ package web
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/CrowderSoup/socialboat/internal/config"
 
@@ -68,6 +70,13 @@ func InvokeServer(
 			OnStart: func(ctx context.Context) error {
 				// Server session store (wire up here because db is required)
 				server.echo.Use(session.Middleware(sessionStore))
+
+				data, err := json.MarshalIndent(server.echo.Routes(), "", "  ")
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fmt.Println(string(data))
 
 				go server.echo.Start(fmt.Sprintf(":%d", c.Port))
 				return nil
